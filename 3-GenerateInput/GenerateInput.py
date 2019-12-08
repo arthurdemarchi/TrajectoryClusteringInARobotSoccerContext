@@ -28,7 +28,7 @@ def readCSV(path):
     return df
 
 def writeCSV(path, df):
-    path = path.replace('/filteredLog/', '/filteredLogTrasClus/')
+    path = path.replace('/input/', '/output/')
     dir = path.rsplit('/', 1)
     if not os.path.exists(dir[0]):
         os.makedirs(dir[0])   
@@ -36,7 +36,7 @@ def writeCSV(path, df):
 
 if __name__ == '__main__':
     
-    dirName = '../filteredLog'
+    dirName = './input'
     
     # Get the list of all files in directory tree at given path
     listOfFiles = getListOfFiles(dirName)

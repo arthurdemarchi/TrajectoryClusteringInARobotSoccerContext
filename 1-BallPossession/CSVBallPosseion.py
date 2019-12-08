@@ -11,8 +11,6 @@ import pandas, os
 
 def ballPossesionRotine(myPath):
     df = pandas.read_csv(myPath)
-    #cycle team_name player_num ball_X ball_y ball_vx ball_vy player_x player_y player_vx player_vy playmode
-    #print(type(df['player_x'][0]))
     print(myPath)
     distanceFromBall = ((df['player_x'] - df['ball_x'])**2 + (df['player_y'] - df['ball_y'])**2)**0.5
     velocityDifference = ((df['player_vx'] - df['ball_vx'])**2 + (df['player_vy'] - df['ball_vy'])**2)**0.5
@@ -74,7 +72,7 @@ def ballPossesionRotine(myPath):
     velocityDifferenceDF = pandas.DataFrame(velocityDifference, columns = ['velocityDifference']) 
 
     newdf = pandas.concat([df, ballPossessionDf, beginPossessionDF, endPossessionDf ,distanceFromBallDf, velocityDifferenceDF], axis=1, sort=False)
-    newmyPath = myPath.replace('/log/', '/csvComPosse/')
+    newmyPath = myPath.replace('/input/', '/output/')
     dir = newmyPath.rsplit('/', 1)
     if not os.path.exists(dir[0]):
         os.makedirs(dir[0])   
@@ -106,7 +104,7 @@ def getListOfFiles(dirName):
 if __name__ == '__main__':
 
     
-    dirName = '../log'
+    dirName = './input'
     
     # Get the list of all files in directory tree at given myPath
     listOfFiles = getListOfFiles(dirName)
