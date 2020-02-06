@@ -5,7 +5,7 @@
 #include <iostream>
 #define debug(a) std::cout << a << std::endl
 #else
-#define debug(a);
+#define debug(a)
 #endif
 
 #endif
