@@ -5,5 +5,6 @@
 
 int main(int argc, char *argv[]) {
   // main
-  Reader reader();
+  Reader reader;
+  reader.readDir();
 }

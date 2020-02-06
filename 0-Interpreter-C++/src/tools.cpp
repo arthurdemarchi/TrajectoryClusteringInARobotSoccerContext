@@ -1,5 +1,4 @@
 #include "tools.h"
-#include <iostream>
 
 std::vector<std::string> listLeaves(std::string rootDir) {
   std::vector<std::string> listOfLeaves;
@@ -24,18 +23,3 @@ std::vector<std::string> listLeaves(std::string rootDir) {
   }
   return listOfLeaves;
 };
-
-void callReaderRecursively(std::string rootDir) {
-  // get list of dirs
-  std::vector<std::string> listOfLeaves = listLeaves(rootDir);
-
-  // read each one of them
-  for (unsigned int i = 0; i < listOfLeaves.size(); ++i) {
-    try {
-      Reader reader(listOfLeaves[i]);
-    } catch (const std::exception &e) {
-      std::cerr << "ERROR: " << e.what() << std::endl;
-      return;
-    }
-  }
-}

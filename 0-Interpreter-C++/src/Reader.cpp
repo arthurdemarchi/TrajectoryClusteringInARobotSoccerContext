@@ -1,26 +1,11 @@
 #include "Reader.h"
 
-Reader::Reader(std::string gameDir) {
-  setPaths(gameDir);
-  loadRcg();
-
+Reader::Reader() {
   // debug("Reader was created for a game in: '" << gameDir << "'.");
 }
 
 Reader::~Reader() {
   // debug("Reader from game in: '" << gameDir << "' was destroyed.");
-}
-
-std::string Reader::getDefaultReadPath() {
-  std::string binPath = std::filesystem::current_path();
-  binPath.replace(binPath.end() - 3, binPath.end(), "data/");
-  debug("The Default Data Path is: " << binPath);
-  return "../data";
-}
-
-std::string Reader::getDefaultWritePath() {
-  // teste
-  return "ola";
 }
 
 bool Reader::setPaths(std::string gameDir) {
@@ -136,7 +121,64 @@ void Reader::loadRcg() {
   }
 }
 
-void Reader::savingCSV(std::string csvPath) {
-  // scope declarations
-  return;
+void Reader::savingCSV(std::string rootDir) {
+  // // path
+  // gameDir.rfind("/data/");
+
+  //     // scope declarations
+  //     std::fstream csvFile;
+
+  // // open file
+  // csvFile.open(csvPath, std::ios::out | std::ios::trunc);
+  // if (csvFile) {
+  // }
+  // for (unsigned int i = 0; i < rcgData.size(); i++) {
+  //   csvFile << rcgData[i];
+  // }
+  // csvFile.close();
+  // return;
+}
+
+void Reader::readGame(std::string gameDir) {
+  // get save dir
+  std::string saveDir = gameDir;
+  int slashPos = saveDir.rfind("/", gameDir.size() - 2);
+  saveDir.replace(slashPos, slashPos - gameDir.size(), "/output/");
+
+  // read and save
+  try {
+    setPaths(gameDir);
+    loadRcg();
+    savingCSV(saveDir);
+  } catch (const std::exception &e) {
+    std::cerr << "ERROR: " << e.what() << std::endl;
+    return;
+  }
+}
+
+void Reader::readDir(std::string rootDir) {
+  // get save dir
+  std::string saveDir;
+  std::string rootSaveDir = rootDir;
+  int slashPos = rootSaveDir.rfind("/", rootDir.size() - 2);
+  rootSaveDir.replace(slashPos, slashPos - rootDir.size(), "/output");
+
+  // get list of dirs
+  std::vector<std::string> gameDirs = listLeaves(rootDir);
+
+  // read all
+  for (unsigned int i = 0; i < gameDirs.size(); ++i) {
+    try {
+      saveDir = gameDirs[i];
+      saveDir.replace(0, rootDir.size(), rootSaveDir);
+
+      setPaths(gameDirs[i]);
+      loadRcg();
+      savingCSV(saveDir);
+
+    } catch (const std::exception &e) {
+      std::cerr << "ERROR: " << e.what() << std::endl;
+      return;
+    }
+  }
 }
