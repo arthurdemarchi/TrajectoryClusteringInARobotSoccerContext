@@ -1,8 +1,20 @@
-// hello.cpp
+#include "debug.h"
+#include "Reader.h"
+#include "tools.h"
 
-#include <iostream>
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    std::cout << "Hello from Linux CMake" << std::endl;
+    std::vector<std::string> listOfLeaves;
+    listOfLeaves = listLeaves("../data");
+
+    for(unsigned int i=0; i<listOfLeaves.size(); ++i){
+        try{
+            Reader reader(listOfLeaves[i]);
+        }
+        catch(const std::exception & e){
+            std::cerr << "ERROR: " << e.what() << std::endl;
+            return 0;
+        }
+    }
+    std::cout << "cabei" << std::endl;
 }

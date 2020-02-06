@@ -1,5 +1,7 @@
-# TrajectoryClusteringInARobotSoccerContext
+## FOLDER 13 - Lessons 25-26
 
-This C++ Interpreter Is adapted from the python one from yangzheng10: https://github.com/yangzheng10/2DLogMining
+* 25. Constructors in C++
+	https://www.youtube.com/watch?v=qeH9Xv_90KM&list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb&index=25
 
-All Credits to him For That.
+op* 26. Destructors in C++
+	https://www.youtube.com/watch?v=qeH9Xv_90KM&list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb&index=26

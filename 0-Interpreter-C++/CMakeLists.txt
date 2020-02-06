@@ -1,18 +1,34 @@
+#defining minimum cmake version
 cmake_minimum_required(VERSION 3.5)
 
-project(Interpreter)
+#defining project name
+project(Project)
 
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")
+#defining flags and output path
+#c++17 is needed due to filesystem librarie
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++17")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
+#defining src and header directories variables
 set(source_dir "${PROJECT_SOURCE_DIR}/src")
 set(include_dir "${PROJECT_SOURCE_DIR}/include")
 
+#include headers directory into relative path
+include_directories (${include_dir})  
+
+#gathers files from src int variable
 file(GLOB source_files "${source_dir}/*.cpp")
-file(GLOB include_files "${include_dir}/*.cpp")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin.bin")
+#choosing build type(debug vs release), if debug define 'DEBUG' for source code
+option(DEBUG "Use debug" OFF)
+if(DEBUG)
+  MESSAGE(STATUS "COMPILING FOR DEBUG")
+  add_definitions(-DDEBUG)
+  set(CMAKE_BUILD_TYPE Debug)
+else()
+  MESSAGE(STATUS "COMPILING FOR RELEASE")
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
-add_executable(Interpreter ${source_files} ${include_files})
-
-
+#compile src files
+add_executable(app.bin ${source_files})
