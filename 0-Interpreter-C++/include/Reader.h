@@ -9,17 +9,27 @@
 
 class Reader {
 private:
+  // Paths
   std::string gameDir;
-
   std::string rclPath;
   std::string rcgPath;
 
+  // Data
+  std::vector<std::string> rcgData;
+
 public:
-  static std::string getDefaultPath();
-  Reader(std::string gameDir = Reader::getDefaultPath());
-  bool setPaths(std::string gameDir);
-  void openFiles();
+  // Constructor and Destructor
+  Reader(std::string gameDir = Reader::getDefaultReadPath());
   ~Reader();
+
+  // Managin Paths
+  static std::string getDefaultReadPath();
+  static std::string getDefaultWritePath();
+  bool setPaths(std::string gameDir);
+
+  // Managin Data
+  void loadRcg();
+  void savingCSV(std::string csvPath);
 };
 
 #endif
