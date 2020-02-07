@@ -1,5 +1,5 @@
 #include "Reader.h"
-
+#define MAX_NUMBER_OF_CYCLES 10000
 Reader::Reader()
 {
 	// debug("Reader was created for a game in: '" << gameDir << "'.");
@@ -10,56 +10,16 @@ Reader::~Reader()
 	// debug("Reader from game in: '" << gameDir << "' was destroyed.");
 }
 
-bool Reader::setPaths(std::string gameDir)
+void Reader::setPaths(std::string rcgPath)
 {
+	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
+		throw std::runtime_error("Not a .rcg file.");
 
-	if (!std::filesystem::is_directory(gameDir))
-	{
-		throw std::runtime_error("Invalid Directory");
-	}
+	if (!std::filesystem::exists(rcgPath))
+		throw std::runtime_error("File doesnt exist.");
 
-	rclPath = "";
-	rcgPath = "";
-	this->gameDir = gameDir;
-
-	for (const auto &entry : std::filesystem::directory_iterator(gameDir))
-	{
-		std::string filePath = entry.path();
-		std::string fileExtension =
-				filePath.substr(filePath.size() - 4, std::string::npos);
-		if (fileExtension == ".rcg")
-		{
-			if (rcgPath == "")
-			{
-				rcgPath = filePath;
-			}
-			else
-			{
-				throw std::runtime_error(
-						"More than one .rcg file was found in the game directory.");
-			}
-		}
-		if (fileExtension == ".rcl")
-		{
-			if (rclPath == "")
-			{
-				rclPath = filePath;
-			}
-			else
-			{
-				throw std::runtime_error(
-						"More than one .rcl file was found in the game directory.");
-			}
-		}
-	}
-
-	if (rcgPath == "" || rclPath == "")
-	{
-		throw std::runtime_error(
-				"No rcl or rcg file was found in the game directory.");
-	}
-
-	return true;
+	this->rcgPath = rcgPath;
+	gameDir = rcgPath.substr(0, rcgPath.rfind("/"));
 }
 
 void Reader::loadRcg()
@@ -67,7 +27,7 @@ void Reader::loadRcg()
 	// scope declarations
 	std::fstream rcgFile(rcgPath);
 	std::string line, playerLine, playerName, resultLine, leftTeam, rightTeam;
-	std::string cycleLines[6001], playmodeLines[6001], columns[6];
+	std::string cycleLines[MAX_NUMBER_OF_CYCLES], playmodeLines[MAX_NUMBER_OF_CYCLES], columns[6];
 	std::string patterns[23] = {
 			"((b)", "((l 1)", "((l 2)", "((l 3)", "((l 4)", "((l 5)",
 			"((l 6)", "((l 7)", "((l 8)", "((l 9)", "((l 10)", "((l 11)",
@@ -75,6 +35,7 @@ void Reader::loadRcg()
 			"((r 7)", "((r 8)", "((r 9)", "((r 10)", "((r 11)"};
 	int position;
 	int cycle = 0;
+	rcgData.clear();
 	rcgData.push_back("cycle, object, position x, position y, speed x, speed y, playmode \n");
 
 	// reading
@@ -83,6 +44,7 @@ void Reader::loadRcg()
 		if (line.find("(show ") != std::string::npos)
 		{
 			cycle = std::stoi(line.substr(6, 4));
+			// debug(cycle);
 			cycleLines[cycle] = line.substr(6);
 		}
 		if (line.find("(result ") != std::string::npos)
@@ -118,7 +80,7 @@ void Reader::loadRcg()
 	rightTeam = rightTeam.substr(0, rightTeam.find_last_of('_'));
 
 	// formating
-	for (int i = 0; i < 6001; i++)
+	for (int i = 0; i < MAX_NUMBER_OF_CYCLES; i++)
 	{
 		columns[0] = cycleLines[i].substr(0, cycleLines[i].find(" "));
 		columns[5] = playmodeLines[i];
@@ -185,6 +147,7 @@ void Reader::savingCSV(std::string saveDir)
 	std::string gameName = rcgPath;
 	gameName.replace(0, gameDir.size(), "");
 	std::string csvPath = saveDir + gameName;
+	csvPath.replace(csvPath.size() - 4, 4, ".csv");
 
 	// scope declarations
 	std::fstream csvFile;
@@ -197,7 +160,7 @@ void Reader::savingCSV(std::string saveDir)
 	return;
 }
 
-void Reader::readGame(std::string gameDir)
+void Reader::readGame(std::string rcgPath)
 {
 	// get save dir
 	std::string saveDir = gameDir;
@@ -207,7 +170,7 @@ void Reader::readGame(std::string gameDir)
 	// read and save
 	try
 	{
-		setPaths(gameDir);
+		setPaths(rcgPath);
 		loadRcg();
 		savingCSV(saveDir);
 	}
@@ -227,17 +190,17 @@ void Reader::readDir(std::string rootDir)
 	rootSaveDir.replace(slashPos, slashPos - rootDir.size(), "/output");
 
 	// get list of dirs
-	std::vector<std::string> gameDirs = listLeaves(rootDir);
+	std::vector<std::string> rcgPaths = listLeaves(rootDir);
 
 	// read all
-	for (unsigned int i = 0; i < gameDirs.size(); ++i)
+	for (unsigned int i = 0; i < rcgPaths.size(); ++i)
 	{
+		std::cout << "reading file: " << rcgPaths[i] << std::endl;
 		try
 		{
-			saveDir = gameDirs[i];
+			setPaths(rcgPaths[i]);
+			saveDir = gameDir;
 			saveDir.replace(0, rootDir.size(), rootSaveDir);
-
-			setPaths(gameDirs[i]);
 			loadRcg();
 			savingCSV(saveDir);
 		}

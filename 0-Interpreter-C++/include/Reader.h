@@ -14,7 +14,6 @@ class Reader
 private:
 	// Paths
 	std::string gameDir;
-	std::string rclPath;
 	std::string rcgPath;
 
 	// Data
@@ -25,9 +24,9 @@ public:
 	Reader();
 	~Reader();
 
-private:
+	// private:
 	// Managin Paths
-	bool setPaths(std::string gameDir);
+	void setPaths(std::string rcgPath);
 
 	// Managin Data
 	void loadRcg();
@@ -38,7 +37,7 @@ private:
 
 public:
 	// Calling Reader
-	void readGame(std::string gameDir = "../data");
+	void readGame(std::string rcgPath);
 	void readDir(std::string rootDir = "../data");
 };
 

@@ -3,8 +3,9 @@
 #include "tools.h"
 #include <iostream>
 
-int main(int argc, char *argv[]) {
-  // main
-  Reader reader;
-  reader.readDir();
+int main(int argc, char *argv[])
+{
+	// main
+	Reader reader;
+	reader.readDir("/home/arthurdemarchi/Soccer/Simulation/2D/logs/RoboCup");
 }
