@@ -121,14 +121,20 @@ void Reader::loadRcg() {
   }
 }
 
-void Reader::savingCSV(std::string rootDir) {
-  // // path
-  // gameDir.rfind("/data/");
+void Reader::savingCSV(std::string saveDir) {
 
-  //     // scope declarations
-  //     std::fstream csvFile;
+  // check if dir exists and creates it if it doesnt.
+  if (!std::filesystem::exists(saveDir))
+    std::filesystem::create_directories(saveDir);
 
-  // // open file
+	//csvPath
+	std::string gameName = rcgPath;
+	gameName.replace(0, gameDir.size, "");
+	
+	std::string csvPath = saveDir + gameName;
+
+  // scope declarations
+  // std::fstream csvFile;
   // csvFile.open(csvPath, std::ios::out | std::ios::trunc);
   // if (csvFile) {
   // }
