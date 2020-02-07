@@ -1,5 +1,5 @@
 #include "Reader.h"
-#define MAX_NUMBER_OF_CYCLES 10000
+
 Reader::Reader()
 {
 	// debug("Reader was created for a game in: '" << gameDir << "'.");
@@ -10,7 +10,7 @@ Reader::~Reader()
 	// debug("Reader from game in: '" << gameDir << "' was destroyed.");
 }
 
-void Reader::setPaths(std::string rcgPath)
+void Reader::setAllPaths(std::string rcgPath, std::string rootDir)
 {
 	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
 		throw std::runtime_error("Not a .rcg file.");
@@ -18,8 +18,22 @@ void Reader::setPaths(std::string rcgPath)
 	if (!std::filesystem::exists(rcgPath))
 		throw std::runtime_error("File doesnt exist.");
 
+	// Paths
 	this->rcgPath = rcgPath;
-	gameDir = rcgPath.substr(0, rcgPath.rfind("/"));
+	this->gameDir = rcgPath.substr(0, rcgPath.rfind("/"));
+	this->rcgName = rcgPath.substr(gameDir.size() + 1);
+
+	if (rootDir == "")
+	{
+		rootDir = gameDir;
+	}
+
+	int position = rootDir.rfind("/", saveDir.size() - 2);
+	this->saveDir = rootDir.substr(0, position);
+	this->saveDir = saveDir + "/output" + gameDir.substr(rootDir.size());
+
+	this->csvPath = saveDir + "/" + rcgName;
+	this->csvPath.replace(csvPath.size() - 4, 4, ".csv");
 }
 
 void Reader::loadRcg()
@@ -35,22 +49,24 @@ void Reader::loadRcg()
 			"((r 7)", "((r 8)", "((r 9)", "((r 10)", "((r 11)"};
 	int position;
 	int cycle = 0;
+
+	// preaparing table to insert data
 	rcgData.clear();
 	rcgData.push_back("cycle, object, position x, position y, speed x, speed y, playmode \n");
 
 	// reading
 	while (getline(rcgFile, line))
 	{
+		//reading player and ball cylcles
 		if (line.find("(show ") != std::string::npos)
 		{
 			cycle = std::stoi(line.substr(6, 4));
-			// debug(cycle);
 			cycleLines[cycle] = line.substr(6);
 		}
+		//reading result(team and score) line
 		if (line.find("(result ") != std::string::npos)
-		{
 			resultLine = line;
-		}
+		//reading playmode lines
 		if (line.find("(playmode ") != std::string::npos)
 		{
 			cycle = std::stoi(line.substr(line.find(" ") + 1, line.rfind(" ") - line.find(" ")));
@@ -80,39 +96,34 @@ void Reader::loadRcg()
 	rightTeam = rightTeam.substr(0, rightTeam.find_last_of('_'));
 
 	// formating
-	for (int i = 0; i < MAX_NUMBER_OF_CYCLES; i++)
+	for (int cycle = 0; cycle < MAX_NUMBER_OF_CYCLES; cycle++)
 	{
-		columns[0] = cycleLines[i].substr(0, cycleLines[i].find(" "));
-		columns[5] = playmodeLines[i];
+		columns[0] = cycleLines[cycle].substr(0, cycleLines[cycle].find(" "));
+		columns[5] = playmodeLines[cycle];
 
 		for (int j = 0; j < 23; j++)
 		{
-			if (cycleLines[i].find(patterns[j]) == std::string::npos)
+			if (cycleLines[cycle].find(patterns[j]) == std::string::npos)
 				continue;
 
-			position = cycleLines[i].find(patterns[j]) + patterns[j].size() + 1;
-			playerLine = cycleLines[i].substr(position, 64);
-			// debug(columns[0] << ": " << playerLine);
+			position = cycleLines[cycle].find(patterns[j]) + patterns[j].size() + 1;
+			playerLine = cycleLines[cycle].substr(position, 64);
 
 			if (j != 0)
 			{
 				position = playerLine.find(" ") + 1;
 				playerLine = playerLine.substr(position, 64);
-				// debug("pre0: " << playerLine);
 
 				position = playerLine.find(" ") + 1;
 				playerLine = playerLine.substr(position, 64);
-				// debug("pre1: " << playerLine);
 			}
 
 			for (int c = 1; c < 5; c++)
 			{
 				columns[c] = playerLine.substr(0, playerLine.find(" "));
-				// debug(c << "th: " << columns[c]);
 
 				position = playerLine.find(" ") + 1;
 				playerLine = playerLine.substr(position, 64);
-				// debug("pre1: " << playerLine);
 			}
 
 			if (j == 0)
@@ -129,6 +140,7 @@ void Reader::loadRcg()
 				playerName = leftTeam + " " + std::to_string(j);
 			}
 
+			//writing to class data
 			rcgData.push_back(columns[0] + ", " + playerName + ", " + columns[1] +
 												", " + columns[2] + ", " + columns[3] + ", " +
 												columns[4] + ", " + columns[5] + "\n");
@@ -136,18 +148,12 @@ void Reader::loadRcg()
 	}
 }
 
-void Reader::savingCSV(std::string saveDir)
+void Reader::saveCsv()
 {
 
 	// check if dir exists and creates it if it doesnt.
 	if (!std::filesystem::exists(saveDir))
 		std::filesystem::create_directories(saveDir);
-
-	//csvPath
-	std::string gameName = rcgPath;
-	gameName.replace(0, gameDir.size(), "");
-	std::string csvPath = saveDir + gameName;
-	csvPath.replace(csvPath.size() - 4, 4, ".csv");
 
 	// scope declarations
 	std::fstream csvFile;
@@ -160,19 +166,13 @@ void Reader::savingCSV(std::string saveDir)
 	return;
 }
 
-void Reader::readGame(std::string rcgPath)
+void Reader::readRcg(std::string rcgPath, std::string rootDir)
 {
-	// get save dir
-	std::string saveDir = gameDir;
-	int slashPos = saveDir.rfind("/", gameDir.size() - 2);
-	saveDir.replace(slashPos, slashPos - gameDir.size(), "/output/");
-
-	// read and save
 	try
 	{
-		setPaths(rcgPath);
+		setAllPaths(rcgPath, rootDir);
 		loadRcg();
-		savingCSV(saveDir);
+		saveCsv();
 	}
 	catch (const std::exception &e)
 	{
@@ -183,31 +183,29 @@ void Reader::readGame(std::string rcgPath)
 
 void Reader::readDir(std::string rootDir)
 {
-	// get save dir
-	std::string saveDir;
-	std::string rootSaveDir = rootDir;
-	int slashPos = rootSaveDir.rfind("/", rootDir.size() - 2);
-	rootSaveDir.replace(slashPos, slashPos - rootDir.size(), "/output");
-
-	// get list of dirs
-	std::vector<std::string> rcgPaths = listLeaves(rootDir);
-
-	// read all
+	std::vector<std::string> rcgPaths = listRcgFiles(rootDir);
 	for (unsigned int i = 0; i < rcgPaths.size(); ++i)
 	{
 		std::cout << "reading file: " << rcgPaths[i] << std::endl;
-		try
-		{
-			setPaths(rcgPaths[i]);
-			saveDir = gameDir;
-			saveDir.replace(0, rootDir.size(), rootSaveDir);
-			loadRcg();
-			savingCSV(saveDir);
-		}
-		catch (const std::exception &e)
-		{
-			std::cerr << "ERROR: " << e.what() << std::endl;
-			return;
-		}
+		readRcg(rcgPaths[i], rootDir);
 	}
 }
+
+std::vector<std::string> Reader::listRcgFiles(std::string rootDir)
+{
+	std::vector<std::string> listOfRcgs;
+	std::string entryPath;
+	for (const auto &entry : std::filesystem::recursive_directory_iterator(rootDir))
+	{
+
+		if (std::filesystem::is_directory(entry.path()))
+			continue;
+
+		entryPath = entry.path();
+		if (!(entryPath.rfind(".rcg") == entryPath.size() - 4))
+			continue;
+
+		listOfRcgs.push_back(entry.path());
+	}
+	return listOfRcgs;
+};
