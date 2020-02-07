@@ -9,33 +9,37 @@
 #include <string>
 #include <vector>
 
-class Reader {
+class Reader
+{
 private:
-  // Paths
-  std::string gameDir;
-  std::string rclPath;
-  std::string rcgPath;
+	// Paths
+	std::string gameDir;
+	std::string rclPath;
+	std::string rcgPath;
 
-  // Data
-  std::vector<std::string> rcgData;
+	// Data
+	std::vector<std::string> rcgData;
 
 public:
-  // Constructor and Destructor
-  Reader();
-  ~Reader();
+	// Constructor and Destructor
+	Reader();
+	~Reader();
 
 private:
-  // Managin Paths
-  bool setPaths(std::string gameDir);
+	// Managin Paths
+	bool setPaths(std::string gameDir);
 
-  // Managin Data
-  void loadRcg();
-  void savingCSV(std::string saveDir);
+	// Managin Data
+	void loadRcg();
+	void loadRcgTeams();
+	void loadRcgCycles();
+	void loadRcgPlaymodes();
+	void savingCSV(std::string saveDir);
 
 public:
-  // Calling Reader
-  void readGame(std::string gameDir = "../data");
-  void readDir(std::string rootDir = "../data");
+	// Calling Reader
+	void readGame(std::string gameDir = "../data");
+	void readDir(std::string rootDir = "../data");
 };
 
 #endif
