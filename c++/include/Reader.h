@@ -1,7 +1,7 @@
-#ifndef READER
-#define READER
+#pragma once
 
 #include "debug.h"
+#include "tools.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -21,26 +21,14 @@ private:
 	std::string csvPath;
 
 	// Data
-	std::vector<std::string> rcgData;
-
-public:
-	// Constructor and Destructor
-	Reader();
-	~Reader();
+	std::vector<std::string> csvData;
 
 private:
-	// Managin Paths
 	void setAllPaths(std::string rcgPath, std::string rootDir);
-	std::vector<std::string> listRcgFiles(std::string rootDir);
-
-	// Managin Data
 	void loadRcg();
 	void saveCsv();
 
 public:
 	// Calling Reader
-	void readRcg(std::string rcgPath, std::string rootDir = "");
-	void readDir(std::string rootDir = "../data");
+	void readDir(std::string rootDir = "../data/input");
 };
-
-#endif
