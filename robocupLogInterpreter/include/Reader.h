@@ -25,7 +25,7 @@ private:
 
 private:
 	// sets all paths a single time before loading and writing
-	void setAllPaths(std::string rcgPath, std::string rootDir);
+	void setAllPaths(const std::string &rcgPath, const std::string &rootDir);
 	// loads data from files and format them in a more readable manner
 	void loadRcg();
 	// saves data in to new file
@@ -33,5 +33,5 @@ private:
 
 public:
 	// Calling Reader
-	void readDir(std::string rootDir = "../data/input");
+	void readDir(const std::string &rootDir = "../data/input");
 };

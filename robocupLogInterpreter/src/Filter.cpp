@@ -1,7 +1,7 @@
 #include "Filter.h"
 
 // SET SYSTEM PATHS
-void Filter::setAllPaths(std::string inputPath, std::string rootDir)
+void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDir)
 {
 	// tests if files arguments are valid
 	if (!(inputPath.rfind(".csv") == inputPath.size() - 4))
@@ -123,7 +123,7 @@ void Filter::loadData()
 	}
 }
 
-int Filter::playmodeToFloat(std::string playmode)
+int Filter::playmodeToFloat(const std::string &playmode)
 {
 	// there are 35 different playmodes
 	// those are translated here to float.
@@ -641,7 +641,7 @@ void Filter::saveRaw()
 }
 
 //USAGE
-void Filter::filterDir(std::string rootDir)
+void Filter::filterDir(const std::string &rootDir)
 {
 	//get list of all csv files in root dir
 	std::vector<std::string> inputPaths = listFiles(rootDir, ".csv");

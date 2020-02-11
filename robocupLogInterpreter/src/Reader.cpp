@@ -1,7 +1,7 @@
 #include "Reader.h"
 
 // SETING PATHS
-void Reader::setAllPaths(std::string rcgPath, std::string rootDir)
+void Reader::setAllPaths(const std::string &rcgPath, const std::string &rootDir)
 {
 	// validates arguments
 	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
@@ -167,7 +167,7 @@ void Reader::saveCsv()
 }
 
 // USAGE
-void Reader::readDir(std::string rootDir)
+void Reader::readDir(const std::string &rootDir)
 {
 	// get all rcg files in directory
 	std::vector<std::string> rcgPaths = listFiles(rootDir, ".rcg");

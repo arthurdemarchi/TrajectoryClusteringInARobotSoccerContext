@@ -66,7 +66,7 @@ private:
 	// SYSTEM PATHS
 	// setAllPaths update all paths of interest in a single call
 	// to avoid overhead
-	void setAllPaths(std::string inputPath, std::string rootDir);
+	void setAllPaths(const std::string &inputPath, const std::string &rootDir);
 
 	// DATA
 
@@ -77,7 +77,7 @@ private:
 	// using playmodeToFloat to convert playmodes
 	// into a float indexing list (integer values)
 	void loadData();
-	int playmodeToFloat(std::string playmode);
+	int playmodeToFloat(const std::string &playmode);
 
 	// 2. plays
 	// setPlays uses a evalHold,isAnEnd and lookForBegin
@@ -106,5 +106,5 @@ private:
 public:
 	//filterDir is a callable method that uses the above
 	//methods in a recursive way for all files in a root dir.
-	void filterDir(std::string rootDir = "../data/csv");
+	void filterDir(const std::string &rootDir = "../data/csv");
 };

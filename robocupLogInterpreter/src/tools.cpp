@@ -1,6 +1,6 @@
 #include "tools.h"
 
-std::vector<std::string> listFiles(std::string rootDir, std::string extension)
+std::vector<std::string> listFiles(const std::string &rootDir, const std::string &extension)
 {
 	// scope declarations
 	std::vector<std::string> listOfRcgs;
