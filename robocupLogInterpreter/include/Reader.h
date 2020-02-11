@@ -1,5 +1,5 @@
 #pragma once
-
+#include "constants.h"
 #include "debug.h"
 #include "tools.h"
 #include <filesystem>
@@ -8,12 +8,11 @@
 #include <string>
 #include <vector>
 
-#define MAX_NUMBER_OF_CYCLES 10000
-
 class Reader
 {
 private:
 	// Paths
+	// paths are setted and stored to avoid overhead
 	std::string gameDir;
 	std::string saveDir;
 	std::string rcgName;
@@ -21,11 +20,15 @@ private:
 	std::string csvPath;
 
 	// Data
+	// data structure used for loading from file to memmory
 	std::vector<std::string> csvData;
 
 private:
+	// sets all paths a single time before loading and writing
 	void setAllPaths(std::string rcgPath, std::string rootDir);
+	// loads data from files and format them in a more readable manner
 	void loadRcg();
+	// saves data in to new file
 	void saveCsv();
 
 public:

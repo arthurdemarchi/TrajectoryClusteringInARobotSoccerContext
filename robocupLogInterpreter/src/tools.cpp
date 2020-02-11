@@ -2,8 +2,13 @@
 
 std::vector<std::string> listFiles(std::string rootDir, std::string extension)
 {
+	// scope declarations
 	std::vector<std::string> listOfRcgs;
 	std::string entryPath;
+
+	//recursively lis all paths in a directory
+	//for each entry(paths) checks if its a file or direcotry
+	//and checks file extension.
 	for (const auto &entry : std::filesystem::recursive_directory_iterator(rootDir))
 	{
 

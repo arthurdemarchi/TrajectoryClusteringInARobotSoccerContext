@@ -1,14 +1,16 @@
 #include "Reader.h"
 
+// SETING PATHS
 void Reader::setAllPaths(std::string rcgPath, std::string rootDir)
 {
+	// validates arguments
 	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
 		throw std::runtime_error("Not a .rcg file.");
 
 	if (!std::filesystem::exists(rcgPath))
 		throw std::runtime_error("File doesnt exist.");
 
-	// Paths
+	// set system paths
 	this->rcgPath = rcgPath;
 	this->gameDir = rcgPath.substr(0, rcgPath.rfind("/"));
 	this->rcgName = rcgPath.substr(gameDir.size() + 1);
@@ -20,9 +22,10 @@ void Reader::setAllPaths(std::string rcgPath, std::string rootDir)
 	this->csvPath.replace(csvPath.size() - 4, 4, ".csv");
 }
 
+// LOADING DATA
 void Reader::loadRcg()
 {
-	// scope declarations
+	// scope declarations including patters to fin in data file
 	std::fstream rcgFile(rcgPath);
 	std::string line, playerLine, playerName, resultLine, leftTeam, rightTeam;
 	std::string cycleLines[MAX_NUMBER_OF_CYCLES], playmodeLines[MAX_NUMBER_OF_CYCLES], columns[6];
@@ -35,11 +38,12 @@ void Reader::loadRcg()
 	int position;
 	int cycle = 0;
 
-	// preaparing table to insert data
+	// preaparing table to insert data, clearing and inserting header
 	csvData.clear();
 	csvData.push_back("cycle, object, position x, position y, speed x, speed y, playmode \n");
 
 	// reading
+	// for each line in file
 	while (getline(rcgFile, line))
 	{
 		//reading player and ball cylcles
@@ -48,10 +52,13 @@ void Reader::loadRcg()
 			cycle = std::stoi(line.substr(6, 4));
 			cycleLines[cycle] = line.substr(6);
 		}
+
 		//reading result(team and score) line
 		if (line.find("(result ") != std::string::npos)
 			resultLine = line;
-		//reading playmode lines
+
+		//reading playmode lines, when playmode not defined defines it as stopped
+		//or play_on based on last playmode.
 		if (line.find("(playmode ") != std::string::npos)
 		{
 			cycle = std::stoi(line.substr(line.find(" ") + 1, line.rfind(" ") - line.find(" ")));
@@ -80,7 +87,10 @@ void Reader::loadRcg()
 	rightTeam = resultLine.substr(resultLine.find("-vs-") + 4);
 	rightTeam = rightTeam.substr(0, rightTeam.find_last_of('_'));
 
-	// formating
+	// formating  loaded lines for a more readable standart
+	// col 0 = cycle, col 1 = pos_x, col 2 = pos_u,
+	// col 3 = speed_x, col 4 = speed_y, col 5 = playmode
+	// also playerName is assigned with player and team values.
 	for (int cycle = 0; cycle < MAX_NUMBER_OF_CYCLES; cycle++)
 	{
 		columns[0] = cycleLines[cycle].substr(0, cycleLines[cycle].find(" "));
@@ -133,6 +143,7 @@ void Reader::loadRcg()
 	}
 }
 
+// SAVING DATA
 void Reader::saveCsv()
 {
 
@@ -140,19 +151,28 @@ void Reader::saveCsv()
 	if (!std::filesystem::exists(saveDir))
 		std::filesystem::create_directories(saveDir);
 
+	// open file
 	std::fstream csvFile;
 	csvFile.open(csvPath, std::ios::out | std::ios::trunc);
+
+	// write to file
 	for (unsigned int i = 0; i < csvData.size(); i++)
 	{
 		csvFile << csvData[i];
 	}
+
+	//close file
 	csvFile.close();
 	return;
 }
 
+// USAGE
 void Reader::readDir(std::string rootDir)
 {
+	// get all rcg files in directory
 	std::vector<std::string> rcgPaths = listFiles(rootDir, ".rcg");
+
+	// for each rcg file sets relevant paths, loads and save.
 	for (unsigned int i = 0; i < rcgPaths.size(); ++i)
 	{
 		std::cout << i << ". reading file: " << rcgPaths[i] << std::endl;
