@@ -571,7 +571,7 @@ void Filter::filterDir(std::string rootDir)
 			createPaths();
 			std::cout << "\t" << i << ".6. writing to I/O." << std::endl;
 			saveCsv();
-			std::cout << "\t" << i << "7. writin raw to I/O" << std::endl;
+			std::cout << "\t" << i << ".7. writin raw to I/O" << std::endl;
 			saveRaw();
 		}
 		catch (const std::exception &e)
