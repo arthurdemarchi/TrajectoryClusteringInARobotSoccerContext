@@ -589,8 +589,7 @@ void Filter::saveCsv()
 	for (int i = 0; i < MAX_PLAY_LENGTH; i++)
 	{
 		csvFile << "pos_x_" << i << ", "
-						<< "pos_y_" << i << ", speed_x_"
-						<< i << ", speed_y_" << i;
+						<< "pos_y_" << i;
 		if (i != MAX_PLAY_LENGTH - 1)
 			csvFile << ", ";
 	}
@@ -599,7 +598,7 @@ void Filter::saveCsv()
 	//print data
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		for (unsigned int j = 0; j < paths[i].size(); j++)
+		for (unsigned int j = 0; j < paths[i].size() - 2; j++)
 		{
 			csvFile << paths[i][j];
 			if (j != paths[i].size() - 1)
@@ -615,14 +614,17 @@ void Filter::saveCsv()
 
 void Filter::saveRaw(bool singleFile, const std::string &rootDir)
 {
-	// check if dir exists and creates it if it doesnt.
-	if (!std::filesystem::exists(rawDir))
-		std::filesystem::create_directories(rawDir);
 
 	// open file
 	if (singleFile)
 	{
-		rawPath = rootDir + std::string("/rawOutput");
+		rawPath = rootDir + std::string("/raw/rawOutput");
+	}
+	else
+	{
+		// check if dir exists and creates it if it doesnt.
+		if (!std::filesystem::exists(rawDir))
+			std::filesystem::create_directories(rawDir);
 	}
 	std::fstream rawFile;
 	rawFile.open(rawPath, std::ios::out | std::ios::app);
@@ -630,7 +632,7 @@ void Filter::saveRaw(bool singleFile, const std::string &rootDir)
 	// print data
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		for (unsigned int j = 3; j < paths[i].size(); j++)
+		for (unsigned int j = 3; j < paths[i].size() - 2; j++)
 		{
 			rawFile << paths[i][j];
 			if (j != paths[i].size() - 1)
@@ -671,7 +673,7 @@ void Filter::filterDir(const std::string &rootDir)
 			std::cout << "\t" << i << ".7. writing csv to I/O." << std::endl;
 			saveCsv();
 			std::cout << "\t" << i << ".8. writin raw to I/O" << std::endl;
-			saveRaw(true, rootDir);
+			saveRaw(true, rootDir.substr(0, rootDir.size() - 4));
 		}
 		catch (const std::exception &e)
 		{
