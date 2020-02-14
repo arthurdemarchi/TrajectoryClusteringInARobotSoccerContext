@@ -613,30 +613,34 @@ void Filter::saveCsv()
 	return;
 }
 
-void Filter::saveRaw()
+void Filter::saveRaw(bool singleFile)
 {
 	// check if dir exists and creates it if it doesnt.
 	if (!std::filesystem::exists(rawDir))
 		std::filesystem::create_directories(rawDir);
 
 	// open file
-	std::fstream csvFile;
-	csvFile.open(rawPath, std::ios::out | std::ios::trunc);
+	if (singleFile)
+	{
+		rawPath = rawDir + "/rawOutput"
+	}
+	std::fstream rawFile;
+	rawFile.open(rawPath, std::ios::out | std::ios::app);
 
 	// print data
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		for (unsigned int j = 3; j < paths[i].size(); j++)
 		{
-			csvFile << paths[i][j];
+			rawFile << paths[i][j];
 			if (j != paths[i].size() - 1)
-				csvFile << ", ";
+				rawFile << ", ";
 		}
-		csvFile << std::endl;
+		rawFile << std::endl;
 	}
 
 	// close file
-	csvFile.close();
+	rawFile.close();
 	return;
 }
 

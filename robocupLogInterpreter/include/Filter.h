@@ -101,7 +101,7 @@ private:
 	// writes paths to files, raw is raw data and
 	// csv is a file with headers and more info.
 	void saveCsv();
-	void saveRaw();
+	void saveRaw(bool singleFile = false);
 
 public:
 	//filterDir is a callable method that uses the above
