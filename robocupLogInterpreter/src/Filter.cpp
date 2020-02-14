@@ -622,7 +622,7 @@ void Filter::saveRaw(bool singleFile)
 	// open file
 	if (singleFile)
 	{
-		rawPath = rawDir + "/rawOutput"
+		rawPath = rawDir + "/rawOutput";
 	}
 	std::fstream rawFile;
 	rawFile.open(rawPath, std::ios::out | std::ios::app);
