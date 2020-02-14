@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
 	// main
 
 	//read rcg
+
 	Reader reader;
 	reader.readDir();
 

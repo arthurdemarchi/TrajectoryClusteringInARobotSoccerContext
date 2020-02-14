@@ -613,7 +613,7 @@ void Filter::saveCsv()
 	return;
 }
 
-void Filter::saveRaw(bool singleFile)
+void Filter::saveRaw(bool singleFile, const std::string &rootDir)
 {
 	// check if dir exists and creates it if it doesnt.
 	if (!std::filesystem::exists(rawDir))
@@ -622,7 +622,7 @@ void Filter::saveRaw(bool singleFile)
 	// open file
 	if (singleFile)
 	{
-		rawPath = rawDir + "/rawOutput";
+		rootDir = rawDir + "/rawOutput";
 	}
 	std::fstream rawFile;
 	rawFile.open(rawPath, std::ios::out | std::ios::app);
@@ -671,7 +671,7 @@ void Filter::filterDir(const std::string &rootDir)
 			std::cout << "\t" << i << ".7. writing csv to I/O." << std::endl;
 			saveCsv();
 			std::cout << "\t" << i << ".8. writin raw to I/O" << std::endl;
-			saveRaw();
+			saveRaw(true, rootDir);
 		}
 		catch (const std::exception &e)
 		{

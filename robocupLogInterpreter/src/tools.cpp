@@ -1,4 +1,6 @@
 #include "tools.h"
+#include <iostream>
+#include "debug.h"
 
 std::vector<std::string> listFiles(const std::string &rootDir, const std::string &extension)
 {
@@ -11,7 +13,6 @@ std::vector<std::string> listFiles(const std::string &rootDir, const std::string
 	//and checks file extension.
 	for (const auto &entry : std::filesystem::recursive_directory_iterator(rootDir))
 	{
-
 		if (std::filesystem::is_directory(entry.path()))
 			continue;
 
