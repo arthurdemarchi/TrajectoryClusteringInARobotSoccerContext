@@ -1,7 +1,7 @@
 #include "Filter.h"
 
 // SET SYSTEM PATHS
-void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDir)
+void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile)
 {
 	// tests if files arguments are valid
 	if (!(inputPath.rfind(".csv") == inputPath.size() - 4))
@@ -16,13 +16,21 @@ void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDi
 	this->inputDir = inputPath.substr(0, inputPath.rfind("/"));
 	this->inputName = inputPath.substr(inputDir.size() + 1);
 	//filtered
-	this->filteredDir = rootDir.substr(0, rootDir.rfind("/", filteredDir.size() - 2));
+	this->filteredDir = rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2));
 	this->filteredDir = filteredDir + "/filtered" + inputDir.substr(rootDir.size());
 	this->filteredPath = filteredDir + "/" + inputName;
 	//raw
-	this->rawDir = filteredDir;
-	this->rawDir = rawDir.replace(rawDir.rfind("/filtered"), 9, "/raw");
-	this->rawPath = rawDir + "/" + inputName.substr(0, inputName.size() - 4);
+	this->rawDir = rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2));
+	if (singleFile)
+	{
+		this->rawDir = rawDir + "/raw";
+		this->rawPath = rawDir + "/output";
+	}
+	else
+	{
+		this->rawDir = rawDir + "/raw" + inputDir.substr(rootDir.size());
+		this->rawPath = rawDir + "/" + inputName;
+	}
 }
 
 //SET DATA
@@ -476,6 +484,7 @@ void Filter::setFiltered()
 	//redo past data lines, since they are in
 	//cycle order.
 	unsigned int playIndex = 0;
+	filtered.clear();
 	for (unsigned int i = 0; i < data.size(); i++)
 	{
 		if (data[i][0] >= plays[playIndex][0] and data[i][0] < plays[playIndex][1])
@@ -612,20 +621,14 @@ void Filter::saveCsv()
 	return;
 }
 
-void Filter::saveRaw(bool singleFile, const std::string &rootDir)
+void Filter::saveRaw()
 {
 
+	// check if dir exists and creates it if it doesnt.
+	if (!std::filesystem::exists(rawDir))
+		std::filesystem::create_directories(rawDir);
+
 	// open file
-	if (singleFile)
-	{
-		rawPath = rootDir + std::string("/raw/rawOutput");
-	}
-	else
-	{
-		// check if dir exists and creates it if it doesnt.
-		if (!std::filesystem::exists(rawDir))
-			std::filesystem::create_directories(rawDir);
-	}
 	std::fstream rawFile;
 	rawFile.open(rawPath, std::ios::out | std::ios::app);
 
@@ -640,7 +643,6 @@ void Filter::saveRaw(bool singleFile, const std::string &rootDir)
 		}
 		rawFile << std::endl;
 	}
-
 	// close file
 	rawFile.close();
 	return;
@@ -659,7 +661,7 @@ void Filter::filterDir(const std::string &rootDir)
 		try
 		{
 			std::cout << "\t" << i << ".1. setting paths and attributes." << std::endl;
-			setAllPaths(inputPaths[i], rootDir);
+			setAllPaths(inputPaths[i], rootDir, true);
 			std::cout << "\t" << i << ".2. loading file: '" << inputName << "'." << std::endl;
 			loadData();
 			std::cout << "\t" << i << ".3. evaluating ball possession." << std::endl;
@@ -673,7 +675,7 @@ void Filter::filterDir(const std::string &rootDir)
 			std::cout << "\t" << i << ".7. writing csv to I/O." << std::endl;
 			saveCsv();
 			std::cout << "\t" << i << ".8. writin raw to I/O" << std::endl;
-			saveRaw(true, rootDir.substr(0, rootDir.size() - 4));
+			saveRaw();
 		}
 		catch (const std::exception &e)
 		{

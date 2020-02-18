@@ -1,6 +1,4 @@
 #include "tools.h"
-#include <iostream>
-#include "debug.h"
 
 std::vector<std::string> listFiles(const std::string &rootDir, const std::string &extension)
 {

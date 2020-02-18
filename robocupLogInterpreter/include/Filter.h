@@ -1,5 +1,4 @@
 #pragma once
-#include "debug.h"
 #include "tools.h"
 #include "constants.h"
 #include <vector>
@@ -66,7 +65,7 @@ private:
 	// SYSTEM PATHS
 	// setAllPaths update all paths of interest in a single call
 	// to avoid overhead
-	void setAllPaths(const std::string &inputPath, const std::string &rootDir);
+	void setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile = false);
 
 	// DATA
 
@@ -101,7 +100,7 @@ private:
 	// writes paths to files, raw is raw data and
 	// csv is a file with headers and more info.
 	void saveCsv();
-	void saveRaw(bool singleFile = false, const std::string &rootDir = "default");
+	void saveRaw();
 
 public:
 	//filterDir is a callable method that uses the above

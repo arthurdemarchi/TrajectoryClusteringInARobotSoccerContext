@@ -171,7 +171,6 @@ void Reader::readDir(const std::string &rootDir)
 {
 	// get all rcg files in directory
 	std::vector<std::string> rcgPaths = listFiles(rootDir, ".rcg");
-	debug(rcgPaths[0]);
 
 	// for each rcg file sets relevant paths, loads and save.
 	for (unsigned int i = 0; i < rcgPaths.size(); ++i)
