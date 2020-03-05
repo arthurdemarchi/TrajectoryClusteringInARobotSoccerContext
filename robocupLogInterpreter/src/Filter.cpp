@@ -544,7 +544,7 @@ bool Filter::isAnEnd(int i)
 int Filter::lookForBegin(int i)
 {
 	//scope declaration for wich teams begins with the ball
-	int teamOnBall;
+	int teamOnBall = -1;
 
 	//if its to early in the game it cant be a play
 	if (i < 23 * 3)
@@ -552,7 +552,6 @@ int Filter::lookForBegin(int i)
 		return 0;
 	}
 
-	// #AQUI
 	//check for wich teams was first in the ball
 	for (int j = i - CHANGE_PLAYMODE_DELAY * 23; j > 0; j--)
 	{
@@ -562,10 +561,8 @@ int Filter::lookForBegin(int i)
 			break;
 		}
 	}
-
 	//checks for last deadBall or change in
 	//ball posession
-
 	for (int j = i - CHANGE_PLAYMODE_DELAY * 23; j > i - (MAX_PLAY_LENGTH * 23) and j > 0; j--)
 	{
 		//stop ball
@@ -574,7 +571,6 @@ int Filter::lookForBegin(int i)
 		{
 			return data[j + 1][0];
 		}
-
 		//change on team on ball
 		//finding last time ball was with another team
 		//that is not the one with the ball
@@ -590,11 +586,18 @@ int Filter::lookForBegin(int i)
 			return data[k][0];
 		}
 	}
-
 	//if neither a deadball or change in possession
 	//was found returns maximum length possibel
 	//max play length
-	return data[i - MAX_PLAY_LENGTH * 23][0];
+	if (i - MAX_PLAY_LENGTH * 23 < 0)
+	{
+		return 0;
+	}
+	else
+	{
+
+		return data[i - MAX_PLAY_LENGTH * 23][0];
+	}
 }
 
 //debug for plays
