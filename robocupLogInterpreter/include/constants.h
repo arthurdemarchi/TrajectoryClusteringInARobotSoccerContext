@@ -19,3 +19,9 @@
 #define REACTION_TIME 1.5
 #define REACTION 2 * (KICKABLE_AREA) / REACTION_TIME
 #define INTERACTION_TRESHOLD 0.4
+
+//after a play is finished there a number of cycles
+//between the finalization of play and the referee
+//playmode message, wich makes evaluating last
+//team on ball hard.
+#define CHANGE_PLAYMODE_DELAY 5

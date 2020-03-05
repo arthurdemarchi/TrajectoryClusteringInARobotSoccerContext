@@ -1,5 +1,5 @@
 #include "Filter.h"
-
+#include "debug.h"
 // SET SYSTEM PATHS
 void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile)
 {
@@ -11,15 +11,43 @@ void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDi
 		throw std::runtime_error("File doesnt exist.");
 
 	// sets all system paths attributes
+	this->rootDir = rootDir;
+
 	//input
+	setInputPath(inputPath);
+
+	//filtered
+	setFilteredPath();
+
+	//teamDir
+	setTeamsPath();
+
+	//raw
+	setRawPath(singleFile);
+
+	return;
+}
+
+void Filter::setInputPath(const std::string &inputPath)
+{
 	this->inputPath = inputPath;
 	this->inputDir = inputPath.substr(0, inputPath.rfind("/"));
 	this->inputName = inputPath.substr(inputDir.size() + 1);
-	//filtered
+
+	return;
+}
+
+void Filter::setFilteredPath()
+{
 	this->filteredDir = rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2));
 	this->filteredDir = filteredDir + "/filtered" + inputDir.substr(rootDir.size());
 	this->filteredPath = filteredDir + "/" + inputName;
-	//raw
+
+	return;
+}
+
+void Filter::setRawPath(bool singleFile)
+{
 	this->rawDir = rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2));
 	if (singleFile)
 	{
@@ -31,6 +59,55 @@ void Filter::setAllPaths(const std::string &inputPath, const std::string &rootDi
 		this->rawDir = rawDir + "/raw" + inputDir.substr(rootDir.size());
 		this->rawPath = rawDir + "/" + inputName;
 	}
+
+	return;
+}
+
+void Filter::setTeamsPath()
+{
+	//set teams dir
+	this->teamsDir = rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2));
+	this->teamsDir = teamsDir + "/teams/";
+
+	// open file
+	std::fstream inputFile(this->inputPath);
+
+	//scope declarations
+	int position;
+
+	//discarts headers and ball line from csv file
+	getline(inputFile, inputLine);
+	getline(inputFile, inputLine);
+
+	//get first team line
+	getline(inputFile, inputLine);
+
+	//discard cycle cell
+	position = inputLine.find(" ");
+	inputLine = inputLine.substr(position + 1);
+
+	//get first team name
+	position = inputLine.find(" ");
+	this->rightTeamPath = this->teamsDir + inputLine.substr(0, position);
+
+	//discart same team lines
+	for (int i = 0; i < 11; i++)
+	{
+		getline(inputFile, inputLine);
+	}
+
+	//get second team line
+	getline(inputFile, inputLine);
+
+	//discard cycle cell
+	position = inputLine.find(" ");
+	inputLine = inputLine.substr(position + 1);
+
+	//get second team name
+	position = inputLine.find(" ");
+	this->leftTeamPath = this->teamsDir + inputLine.substr(0, position);
+
+	return;
 }
 
 //SET DATA
@@ -291,6 +368,41 @@ int Filter::playmodeToFloat(const std::string &playmode)
 	return -1;
 }
 
+void Filter::saveLoadedData()
+{
+	// check if dir exists and creates it if it doesnt.
+	std::string debugDir = filteredDir;
+	std::string debugPath = filteredPath;
+	debugDir.replace(debugDir.find("/filtered"), 9, "/debug");
+	debugPath.replace(debugPath.find("/filtered"), 9, "/debug");
+
+	if (!std::filesystem::exists(debugDir))
+		std::filesystem::create_directories(debugDir);
+
+	//  open file
+	std::fstream csvFile;
+	csvFile.open(debugPath, std::ios::out | std::ios::trunc);
+
+	// write headers
+	csvFile << "cycle, team, player, pos_x, pos_y, speed_x, speed_y, ihold, fhold, holding, playmode" << std::endl;
+
+	//print data
+	for (unsigned int i = 0; i < data.size(); i++)
+	{
+		for (unsigned int j = 0; j < data[i].size(); j++)
+		{
+			csvFile << data[i][j];
+			if (j != data[i].size() - 1)
+				csvFile << ", ";
+		}
+		csvFile << std::endl;
+	}
+
+	//close file
+	csvFile.close();
+	return;
+}
+
 //SET PLAYS
 void Filter::setPlays()
 {
@@ -431,7 +543,7 @@ bool Filter::isAnEnd(int i)
 int Filter::lookForBegin(int i)
 {
 	//scope declaration for wich teams begins with the ball
-	int teamOnBall = 0;
+	int teamOnBall;
 
 	//if its to early in the game it cant be a play
 	if (i < 23 * 3)
@@ -439,21 +551,22 @@ int Filter::lookForBegin(int i)
 		return 0;
 	}
 
+	// #AQUI
 	//check for wich teams was first in the ball
-	for (int j = i - 23 * 3; j < i - 23 * 2; j++)
+	for (int j = i - CHANGE_PLAYMODE_DELAY * 23; j > 0; j--)
 	{
 		if (data[j][9])
+		{
 			teamOnBall = data[j][1];
+			break;
+		}
 	}
 
 	//checks for last deadBall or change in
 	//ball posession
-	for (int j = i; j > i - (MAX_PLAY_LENGTH * 23); j--)
+
+	for (int j = i - CHANGE_PLAYMODE_DELAY * 23; j > i - (MAX_PLAY_LENGTH * 23) and j > 0; j--)
 	{
-		if (j == 0)
-		{
-			return 0;
-		}
 		//stop ball
 		//any play mode that not play_on
 		if (data[j][10] and !data[j + 1][10])
@@ -462,14 +575,31 @@ int Filter::lookForBegin(int i)
 		}
 
 		//change on team on ball
+		//finding last time ball was with another team
+		//that is not the one with the ball
 		if (data[j][9] and !(teamOnBall == data[j][1]))
-			return data[j + 1][0];
+		{
+			//discarting cycles where no ball possession
+			//was found
+			int k = j + 1;
+			while (!data[k][9])
+			{
+				k++;
+			}
+			return data[k][0];
+		}
 	}
 
 	//if neither a deadball or change in possession
 	//was found returns maximum length possibel
 	//max play length
 	return data[i - MAX_PLAY_LENGTH * 23][0];
+}
+
+void Filter::printPlays()
+{
+	for (unsigned int i = 0; i < plays.size(); i++)
+		std::cout << "[DEBUG] play " << i << " goes from: " << plays[i][0] << " to: " << plays[i][1] << std::endl;
 }
 
 //SET FILTERED
@@ -501,7 +631,7 @@ void Filter::setFiltered()
 	}
 }
 
-//SET PATHS
+//SET PATHS(TRAJECTORIES)
 void Filter::createPaths()
 {
 	//clear path before loading
@@ -621,6 +751,48 @@ void Filter::saveCsv()
 	return;
 }
 
+void Filter::saveTeams()
+{
+	// check if dir exists and creates it if it doesnt.
+	if (!std::filesystem::exists(teamsDir))
+		std::filesystem::create_directories(teamsDir);
+
+	//  open file
+	std::fstream rightTeamFile, leftTeamFile;
+	rightTeamFile.open(rightTeamPath, std::ios::app);
+	leftTeamFile.open(leftTeamPath, std::ios::app);
+
+	//print data
+	for (unsigned int i = 0; i < paths.size(); i++)
+	{
+		if (paths[i][1] == 0)
+		{
+			for (unsigned int j = 0; j < paths[i].size() - 2; j++)
+			{
+				rightTeamFile << paths[i][j];
+				if (j != paths[i].size() - 1)
+					rightTeamFile << ", ";
+			}
+			rightTeamFile << std::endl;
+		}
+		if (paths[i][1] == 1)
+		{
+			for (unsigned int j = 0; j < paths[i].size() - 2; j++)
+			{
+				leftTeamFile << paths[i][j];
+				if (j != paths[i].size() - 1)
+					leftTeamFile << ", ";
+			}
+			leftTeamFile << std::endl;
+		}
+	}
+
+	//close file
+	rightTeamFile.close();
+	leftTeamFile.close();
+	return;
+}
+
 void Filter::saveRaw()
 {
 
@@ -666,15 +838,19 @@ void Filter::filterDir(const std::string &rootDir)
 			loadData();
 			std::cout << "\t" << i << ".3. evaluating ball possession." << std::endl;
 			evalHold();
+			saveLoadedData();
 			std::cout << "\t" << i << ".4. loading plays." << std::endl;
 			setPlays();
+			printPlays();
 			std::cout << "\t" << i << ".5. filtering data." << std::endl;
 			setFiltered();
 			std::cout << "\t" << i << ".6. creating paths." << std::endl;
 			createPaths();
 			std::cout << "\t" << i << ".7. writing csv to I/O." << std::endl;
 			saveCsv();
-			std::cout << "\t" << i << ".8. writin raw to I/O" << std::endl;
+			std::cout << "\t" << i << ".8. writing teams to I/O." << std::endl;
+			saveTeams();
+			std::cout << "\t" << i << ".9. writin raw to I/O" << std::endl;
 			saveRaw();
 		}
 		catch (const std::exception &e)

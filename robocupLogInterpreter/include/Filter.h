@@ -21,6 +21,7 @@ private:
 	// System Paths will be used constantly, so to avoid
 	// overhead they will be infered a single time
 	// and stored in the class
+	std::string rootDir;
 	std::string inputDir;
 	std::string inputPath;
 	std::string inputName;
@@ -28,6 +29,9 @@ private:
 	std::string filteredPath;
 	std::string rawDir;
 	std::string rawPath;
+	std::string teamsDir;
+	std::string leftTeamPath;
+	std::string rightTeamPath;
 
 	// Data
 	// this class has 4 data structures:
@@ -63,9 +67,12 @@ private:
 	// #### METHODS ####
 
 	// SYSTEM PATHS
-	// setAllPaths update all paths of interest in a single call
-	// to avoid overhead
+	// setAllPaths sets root Dir and Calls all the other setters in order.
 	void setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile = false);
+	void setInputPath(const std::string &inputPath);
+	void setFilteredPath();
+	void setTeamsPath();
+	void setRawPath(bool singleFile);
 
 	// DATA
 
@@ -77,7 +84,7 @@ private:
 	// into a float indexing list (integer values)
 	void loadData();
 	int playmodeToFloat(const std::string &playmode);
-
+	void saveLoadedData();
 	// 2. plays
 	// setPlays uses a evalHold,isAnEnd and lookForBegin
 	// those are function to define ball possession and then
@@ -87,6 +94,7 @@ private:
 	void evalHold();
 	bool isAnEnd(int i);
 	int lookForBegin(int i);
+	void printPlays();
 
 	// 3. filter
 	// filter uses "plays" to create a filtered version of "data".
@@ -101,6 +109,7 @@ private:
 	// csv is a file with headers and more info.
 	void saveCsv();
 	void saveRaw();
+	void saveTeams();
 
 public:
 	//filterDir is a callable method that uses the above

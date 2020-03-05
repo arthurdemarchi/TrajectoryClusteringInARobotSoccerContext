@@ -1,3 +1,7 @@
+//TO DO
+//mkdir data before run
+//files per team
+
 #include "Reader.h"
 #include "Filter.h"
 
