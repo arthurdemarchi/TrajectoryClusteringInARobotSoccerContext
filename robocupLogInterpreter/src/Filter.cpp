@@ -368,6 +368,7 @@ int Filter::playmodeToFloat(const std::string &playmode)
 	return -1;
 }
 
+//debug for data
 void Filter::saveLoadedData()
 {
 	// check if dir exists and creates it if it doesnt.
@@ -596,6 +597,7 @@ int Filter::lookForBegin(int i)
 	return data[i - MAX_PLAY_LENGTH * 23][0];
 }
 
+//debug for plays
 void Filter::printPlays()
 {
 	for (unsigned int i = 0; i < plays.size(); i++)
@@ -696,10 +698,10 @@ void Filter::createPaths()
 					break;
 				}
 
-				path.push_back(filtered[i][3]);
-				path.push_back(filtered[i][4]);
-				path.push_back(filtered[i][5]);
-				path.push_back(filtered[i][6]);
+				path.push_back(filtered[i][3]); //pos x
+				path.push_back(filtered[i][4]); //pos y
+				// path.push_back(filtered[i][5]); //speed x
+				// path.push_back(filtered[i][6]); //speed y
 
 				if ((i > filtered.size() - 24))
 				{
@@ -737,7 +739,7 @@ void Filter::saveCsv()
 	//print data
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		for (unsigned int j = 0; j < paths[i].size() - 2; j++)
+		for (unsigned int j = 0; j < paths[i].size(); j++)
 		{
 			csvFile << paths[i][j];
 			if (j != paths[i].size() - 1)
@@ -807,7 +809,7 @@ void Filter::saveRaw()
 	// print data
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		for (unsigned int j = 3; j < paths[i].size() - 2; j++)
+		for (unsigned int j = 3; j < paths[i].size(); j++)
 		{
 			rawFile << paths[i][j];
 			if (j != paths[i].size() - 1)
@@ -838,10 +840,10 @@ void Filter::filterDir(const std::string &rootDir)
 			loadData();
 			std::cout << "\t" << i << ".3. evaluating ball possession." << std::endl;
 			evalHold();
-			saveLoadedData();
+			// saveLoadedData(); //debug for data
 			std::cout << "\t" << i << ".4. loading plays." << std::endl;
 			setPlays();
-			printPlays();
+			// printPlays(); //debug for playes
 			std::cout << "\t" << i << ".5. filtering data." << std::endl;
 			setFiltered();
 			std::cout << "\t" << i << ".6. creating paths." << std::endl;
