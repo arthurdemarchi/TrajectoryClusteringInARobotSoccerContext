@@ -177,4 +177,6 @@ $RECYCLE.BIN/
 
 
 #NOT AUTO GENERATED LINES
-#data/*
+data/*
+bin/*
+build/*

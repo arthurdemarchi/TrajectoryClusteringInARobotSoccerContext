@@ -88,7 +88,7 @@ void Filter::setTeamsPath()
 
 	//get first team name
 	position = inputLine.find(" ");
-	this->rightTeamPath = this->teamsDir + inputLine.substr(0, position);
+	this->leftTeamPath = this->teamsDir + inputLine.substr(0, position);
 
 	//discart same team lines
 	for (int i = 0; i < 11; i++)
@@ -105,7 +105,7 @@ void Filter::setTeamsPath()
 
 	//get second team name
 	position = inputLine.find(" ");
-	this->leftTeamPath = this->teamsDir + inputLine.substr(0, position);
+	this->rightTeamPath = this->teamsDir + inputLine.substr(0, position);
 
 	return;
 }
@@ -187,7 +187,7 @@ void Filter::loadData()
 		inputLine = inputLine.substr(position + 1);
 
 		//get playmode and converts to a float via function
-		playmode = playmodeToFloat(inputLine);
+		playmode = playmodeToInt(inputLine);
 
 		//clear line before loading
 		//loads line
@@ -208,7 +208,7 @@ void Filter::loadData()
 	}
 }
 
-int Filter::playmodeToFloat(const std::string &playmode)
+int Filter::playmodeToInt(const std::string &playmode)
 {
 	// there are 35 different playmodes
 	// those are translated here to float.
@@ -262,11 +262,11 @@ int Filter::playmodeToFloat(const std::string &playmode)
 	{
 		return 11;
 	}
-	if (playmode == "goal_kick_r")
+	if (playmode == "goal_kick_l")
 	{
 		return 12;
 	}
-	if (playmode == "goal_kick_l")
+	if (playmode == "goal_kick_r")
 	{
 		return 13;
 	}
@@ -420,6 +420,7 @@ void Filter::setPlays()
 			play.clear();
 			play.push_back(lookForBegin(i));
 			play.push_back(data[i][0]);
+			play.push_back(getAttacker(data[i][10]));
 			plays.push_back(play);
 		}
 	}
@@ -522,15 +523,15 @@ bool Filter::isAnEnd(int i)
 
 	//check for finalizations using playmode, floats translation is wrinte in comments
 	//check goalie kick off
-	if ((data[i][10] == 12 or data[i][10] == 13) and (data[i - 1][10] == 12 or data[i - 1][10] == 13))
+	if (data[i][10] == 12 or data[i][10] == 13)
 		return true;
 
 	// // 	checkGoal();
-	if ((data[i][10] == 14 or data[i][10] == 15) and (data[i - 1][10] == 14 or data[i - 1][10] == 15))
+	if (data[i][10] == 14 or data[i][10] == 15)
 		return true;
 
 	// check corner kick off
-	if ((data[i][10] == 16 or data[i][10] == 17) and (data[i - 1][10] == 16 or data[i - 1][10] == 17))
+	if (data[i][10] == 16 or data[i][10] == 17)
 		return true;
 
 	//check goalie catch
@@ -573,7 +574,7 @@ int Filter::lookForBegin(int i)
 		}
 		//change on team on ball
 		//finding last time ball was with another team
-		//that is not the one with the ball
+		//that is not the one with the ball in the finalizatino
 		if (data[j][9] and !(teamOnBall == data[j][1]))
 		{
 			//discarting cycles where no ball possession
@@ -600,11 +601,38 @@ int Filter::lookForBegin(int i)
 	}
 }
 
+int Filter::getAttacker(int playmode)
+{
+	// table to visualize who is the attacler
+	//based on the playmode of the end of play
+
+	// id    playmode			  attacker
+	// 2     free kick l		  r
+	// 3     free kick r		  l
+	// 12    goalie kick off l    r
+	// 13    goalie kick off r	  l
+	// 14    goal l				  l
+	// 15    goal r				  r
+	// 16    corner kick off l	  l
+	// 17    corner kick off r    r
+
+	//remembering that l = 0, r = 1;
+	if(playmode == 3 or playmode == 13 or playmode == 14 or playmode == 16){
+		return 0;
+	}
+
+	if(playmode == 2 or playmode == 12 or playmode == 15 or playmode == 17){
+		return 1;
+	}
+	
+	return -1;
+}
+
 //debug for plays
 void Filter::printPlays()
 {
 	for (unsigned int i = 0; i < plays.size(); i++)
-		std::cout << "[DEBUG] play " << i << " goes from: " << plays[i][0] << " to: " << plays[i][1] << std::endl;
+		std::cout << "[DEBUG] play " << i << " goes from: " << plays[i][0] << " to: " << plays[i][1] << " and attacker is team " << plays[i][2] << std::endl;
 }
 
 //SET FILTERED
@@ -661,7 +689,7 @@ void Filter::createPaths()
 	//takes the first line in data that represents the begin of a play
 	//iterating over playFirstLine.
 	//play 1 -> cycle 660 -> line 10000, for example (example)
-	//the uses a delta for player (0-22) to iterate insde said cycle
+	//the uses a delta for player (0-22) to iterate inside said cycle
 	//because cycle 660 is actualy composed of 23 lines in data
 	//than using data delta iterates with a sum of 23 so that
 	//it will take the next cycles for the same player.
@@ -703,8 +731,6 @@ void Filter::createPaths()
 
 				path.push_back(filtered[i][3]); //pos x
 				path.push_back(filtered[i][4]); //pos y
-				// path.push_back(filtered[i][5]); //speed x
-				// path.push_back(filtered[i][6]); //speed y
 
 				if ((i > filtered.size() - 24))
 				{
@@ -768,27 +794,44 @@ void Filter::saveTeams()
 	leftTeamFile.open(leftTeamPath, std::ios::app);
 
 	//print data
+	unsigned int playsIndex;
+	int attacker;
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
+		//get play index and use it to determine who was attacker during this path execution
+		playsIndex = 0;
+		while (playsIndex < plays.size()){
+			if(paths[i][0] == plays[playsIndex][0])
+				break;
+			playsIndex++;
+		}
+		attacker = plays[playsIndex][2];
+
+		//if the path in question is not from an attacker ignore it
+		if(paths[i][1] != attacker)
+			continue;
+
+		//else write path into team file
 		if (paths[i][1] == 0)
 		{
-			for (unsigned int j = 0; j < paths[i].size() - 2; j++)
-			{
-				rightTeamFile << paths[i][j];
-				if (j != paths[i].size() - 1)
-					rightTeamFile << ", ";
-			}
-			rightTeamFile << std::endl;
-		}
-		if (paths[i][1] == 1)
-		{
-			for (unsigned int j = 0; j < paths[i].size() - 2; j++)
+			for (unsigned int j = 3; j < paths[i].size(); j++)
 			{
 				leftTeamFile << paths[i][j];
 				if (j != paths[i].size() - 1)
 					leftTeamFile << ", ";
 			}
 			leftTeamFile << std::endl;
+		}
+
+		if (paths[i][1] == 1)
+		{
+			for (unsigned int j = 3; j < paths[i].size(); j++)
+			{
+				rightTeamFile << -1*paths[i][j];
+				if (j != paths[i].size() - 1)
+					rightTeamFile << ", ";
+			}
+			rightTeamFile << std::endl;
 		}
 	}
 
@@ -846,7 +889,7 @@ void Filter::filterDir(const std::string &rootDir)
 			// saveLoadedData(); //debug for data
 			std::cout << "\t" << i << ".4. loading plays." << std::endl;
 			setPlays();
-			// printPlays(); //debug for playes
+			printPlays(); //debug for playes
 			std::cout << "\t" << i << ".5. filtering data." << std::endl;
 			setFiltered();
 			std::cout << "\t" << i << ".6. creating paths." << std::endl;

@@ -83,7 +83,7 @@ private:
 	// using playmodeToFloat to convert playmodes
 	// into a float indexing list (integer values)
 	void loadData();
-	int playmodeToFloat(const std::string &playmode);
+	int playmodeToInt(const std::string &playmode);
 	void saveLoadedData();
 	// 2. plays
 	// setPlays uses a evalHold,isAnEnd and lookForBegin
@@ -94,6 +94,7 @@ private:
 	void evalHold();
 	bool isAnEnd(int i);
 	int lookForBegin(int i);
+	int getAttacker(int playmdoe);
 	void printPlays();
 
 	// 3. filter
