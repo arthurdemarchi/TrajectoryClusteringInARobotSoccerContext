@@ -648,8 +648,13 @@ void Filter::setFiltered()
 	//cycle order.
 	unsigned int playIndex = 0;
 	filtered.clear();
+	
+	if (plays.empty())
+		return;
+
 	for (unsigned int i = 0; i < data.size(); i++)
 	{
+		
 		if (data[i][0] >= plays[playIndex][0] and data[i][0] < plays[playIndex][1])
 		{
 			filtered.push_back(data[i]);
@@ -673,6 +678,9 @@ void Filter::createPaths()
 
 	//scope declarations for a variable
 	std::vector<int> playFirstLine;
+
+	if (filtered.empty())
+		return;
 
 	//defining the first data line that represents each
 	//plays first cycle.
@@ -889,7 +897,7 @@ void Filter::filterDir(const std::string &rootDir)
 			// saveLoadedData(); //debug for data
 			std::cout << "\t" << i << ".4. loading plays." << std::endl;
 			setPlays();
-			printPlays(); //debug for playes
+			// printPlays(); //debug for playes
 			std::cout << "\t" << i << ".5. filtering data." << std::endl;
 			setFiltered();
 			std::cout << "\t" << i << ".6. creating paths." << std::endl;
