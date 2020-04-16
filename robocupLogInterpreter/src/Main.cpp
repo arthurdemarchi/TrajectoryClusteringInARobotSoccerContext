@@ -4,16 +4,19 @@
 
 #include "Reader.h"
 #include "Filter.h"
+#include "tools.h"
+#include "fileFormat.h"
 
 int main(int argc, char *argv[])
 {
 	// main
+	fileFormat format = UserInterface();
 
 	//read rcg
 	Reader reader;
 	reader.readDir();
 
 	//filter data
-	Filter filter;
+	Filter filter(format);
 	filter.filterDir();
 }

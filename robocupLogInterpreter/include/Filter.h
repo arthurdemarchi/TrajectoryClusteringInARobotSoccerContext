@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include "fileFormat.h"
 
 // FILTER CLASS
 // used to filter csv interpreted
@@ -17,6 +18,10 @@ class Filter
 
 	// #### ATTRIBUTES ####
 private:
+	// struct with data that represents the format
+	// in wich the output will be displayed on save
+	fileFormat outputFormat;
+
 	// System Paths
 	// System Paths will be used constantly, so to avoid
 	// overhead they will be infered a single time
@@ -25,13 +30,17 @@ private:
 	std::string inputDir;
 	std::string inputPath;
 	std::string inputName;
-	std::string filteredDir;
-	std::string filteredPath;
-	std::string rawDir;
-	std::string rawPath;
-	std::string teamsDir;
-	std::string leftTeamPath;
-	std::string rightTeamPath;
+	std::string outputDir;
+	std::string outputPath;
+	std::string outputSecondPath;
+
+	//	std::string filteredDir;
+	//	std::string filteredPath;
+	//	std::string rawDir;
+	//	std::string rawPath;
+	//	std::string teamsDir;
+	//	std::string leftTeamPath;
+	//	std::string rightTeamPath;
 
 	// Data
 	// this class has 4 data structures:
@@ -68,12 +77,17 @@ private:
 
 	// SYSTEM PATHS
 	// setAllPaths sets root Dir and Calls all the other setters in order.
-	void setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile = false);
-	void setInputPath(const std::string &inputPath);
-	void setFilteredPath();
-	void setTeamsPath();
-	void setRawPath(bool singleFile);
-
+	//void setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile = false);
+	//void setPathsByFormat(fileFormat &format, const std::string &inputPath, const std::string &rootDir);
+	//void setInputPath(const std::string &inputPath);
+	//void setFilteredPath();
+	//void setTeamsPath();
+	//void setRawPath(bool singleFile);
+	void setPaths(const std::string &inputPath, const std::string &rootDir);
+	void setInputPath(const std::string &inputPat);
+	void setSinglePath();
+	void setPerGamePath();
+	void setPerTeamPath();
 	// DATA
 
 	// The 4 data structures are created via following methods
@@ -82,7 +96,8 @@ private:
 	// loadData takes data from files to "data";
 	// using playmodeToFloat to convert playmodes
 	// into a float indexing list (integer values)
-	void loadData();
+	void
+	loadData();
 	int playmodeToInt(const std::string &playmode);
 	void saveLoadedData();
 	// 2. plays
@@ -108,12 +123,19 @@ private:
 	// OUTPUT
 	// writes paths to files, raw is raw data and
 	// csv is a file with headers and more info.
-	void saveCsv();
-	void saveRaw();
-	void saveTeams();
+	//void saveCsv();
+	//void saveRaw();
+	//void saveTeams();
+	void saveFile();
+	void writeHeaderIfEmpty();
+	bool isPathIdFromOffense(unsigned int i);
+	void writeBody();
 
 public:
+	Filter(fileFormat format) : outputFormat(format)
+	{
+	}
 	//filterDir is a callable method that uses the above
 	//methods in a recursive way for all files in a root dir.
-	void filterDir(const std::string &rootDir = "../data/csv");
+	void filterDir(const std::string &rootDir = "../data/output/unfiltered");
 };

@@ -16,7 +16,7 @@ void Reader::setAllPaths(const std::string &rcgPath, const std::string &rootDir)
 	this->rcgName = rcgPath.substr(gameDir.size() + 1);
 
 	this->saveDir = rootDir.substr(0, rootDir.rfind("/", saveDir.size() - 2));
-	this->saveDir = saveDir + "/csv" + gameDir.substr(rootDir.size());
+	this->saveDir = saveDir + "/output/unfiltered" + gameDir.substr(rootDir.size());
 
 	this->csvPath = saveDir + "/" + rcgName;
 	this->csvPath.replace(csvPath.size() - 4, 4, ".csv");
@@ -31,10 +31,10 @@ void Reader::loadRcg()
 	std::string cycleLines[MAX_NUMBER_OF_CYCLES], playmodeLines[MAX_NUMBER_OF_CYCLES], columns[6];
 	std::vector<float> rcgDataLine;
 	std::string patterns[23] = {
-			"((b)", "((l 1)", "((l 2)", "((l 3)", "((l 4)", "((l 5)",
-			"((l 6)", "((l 7)", "((l 8)", "((l 9)", "((l 10)", "((l 11)",
-			"((r 1)", "((r 2)", "((r 3)", "((r 4)", "((r 5)", "((r 6)",
-			"((r 7)", "((r 8)", "((r 9)", "((r 10)", "((r 11)"};
+		"((b)", "((l 1)", "((l 2)", "((l 3)", "((l 4)", "((l 5)",
+		"((l 6)", "((l 7)", "((l 8)", "((l 9)", "((l 10)", "((l 11)",
+		"((r 1)", "((r 2)", "((r 3)", "((r 4)", "((r 5)", "((r 6)",
+		"((r 7)", "((r 8)", "((r 9)", "((r 10)", "((r 11)"};
 	int position;
 	int cycle = 0;
 
@@ -137,8 +137,8 @@ void Reader::loadRcg()
 
 			//writing to class data
 			csvData.push_back(columns[0] + ", " + playerName + ", " + columns[1] +
-												", " + columns[2] + ", " + columns[3] + ", " +
-												columns[4] + ", " + columns[5] + "\n");
+							  ", " + columns[2] + ", " + columns[3] + ", " +
+							  columns[4] + ", " + columns[5] + "\n");
 		}
 	}
 }
