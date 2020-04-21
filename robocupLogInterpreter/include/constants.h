@@ -1,13 +1,34 @@
-#pragma once
-//this are the cosntants values used in source code
+// Constants Used throuhg code
+// Copyright (C) 2020  Arthur Demarchi
+
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+#ifndef INCLUDE_CONSTANTS_H
+#define INCLUDE_CONSTANTS_H
 
 //defining maximum game length
+//6000 cycles for normal games
+//4000 cycles for prorrogation
 #define MAX_NUMBER_OF_CYCLES 10000
 
-//defining player maximum length
+//defining play maximum length
+//based purely on empirical observations
+//of how long a play takes to happen
 #define MAX_PLAY_LENGTH 150
 
-//defining manual book constants
+//Constants based on 2D Soccer Simulation Manual used by Robocup
 #define PLAYER_BODY 0.085
 #define PLAYER_SIZE 0.3
 #define PLAYER_AREA (PLAYER_BODY + PLAYER_SIZE)
@@ -23,5 +44,9 @@
 //after a play is finished there a number of cycles
 //between the finalization of play and the referee
 //playmode message, wich makes evaluating last
-//team on ball hard.
+//team on ball hard. This constant determines
+//at wich how many cycles in message delay are
+//acceptable.
 #define CHANGE_PLAYMODE_DELAY 5
+
+#endif // INCLUDE_CONSTANTS_H
