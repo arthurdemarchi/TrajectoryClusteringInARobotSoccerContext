@@ -40,7 +40,7 @@ fileFormat UserInterface()
         scanf(" %c", &option.filterBy);
         getchar();
         if (option.filterBy == 'f' or option.filterBy == 'o')
-        {       
+        {
             //std::cout << "you chosed: " << option.filterBy << std::endl;
             break;
         }
@@ -133,7 +133,7 @@ fileFormat UserInterface()
         }
     } while (true);
 
-    //play length option
+    //cycle option
     std::cout << "6. Do you want a first cycle column on the File?" << std::endl;
     std::cout << "  y/n > ";
     do
@@ -159,7 +159,7 @@ fileFormat UserInterface()
         }
     } while (true);
 
-    //play length option
+    //team option
     std::cout << "7. Do you want a team column on the File?" << std::endl;
     std::cout << "  y/n > ";
     do
@@ -184,7 +184,8 @@ fileFormat UserInterface()
             std::cout << "  y/n > ";
         }
     } while (true);
-    //play length option
+
+    //player option
     std::cout << "8. Do you want a player column on the File?" << std::endl;
     std::cout << "  y/n > ";
     do
@@ -209,6 +210,7 @@ fileFormat UserInterface()
             std::cout << "  y/n > ";
         }
     } while (true);
+
     //play length option
     std::cout << "9. Do you want plays length column on the File?" << std::endl;
     std::cout << "  y/n > ";
@@ -226,6 +228,32 @@ fileFormat UserInterface()
         {
             //std::cout << "you chosed: " << yesOrNo << std::endl;
             option.playLength = false;
+            break;
+        }
+        else
+        {
+            std::cout << "  Invalid option try again: " << std::endl;
+            std::cout << "  y/n > ";
+        }
+    } while (true);
+
+    //play length option
+    std::cout << "9. Do you want to Annalize offenses in a single direction?" << std::endl;
+    std::cout << "  y/n > ";
+    do
+    {
+        scanf(" %c", &yesOrNo);
+        getchar();
+        if (yesOrNo == 'y')
+        {
+            //std::cout << "you chosed: " << yesOrNo << std::endl;
+            option.halfField = true;
+            break;
+        }
+        else if (yesOrNo == 'n')
+        {
+            //std::cout << "you chosed: " << yesOrNo << std::endl;
+            option.halfField = false;
             break;
         }
         else
