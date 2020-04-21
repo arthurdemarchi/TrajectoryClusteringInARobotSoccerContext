@@ -23,7 +23,7 @@ After downloading it to local
 
 3. Place log data into ./data/input:
         
-        mv -r <YOUR/DATA/FOLDER/PATH> ./data/input
+        mv <YOUR/DATA/FOLDER/PATH> ./data/input
 
     or download directly from robocup archive and make them rcg files (robocup is now provind them as .gz for some reason)
         
