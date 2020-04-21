@@ -1,14 +1,15 @@
 #include "Reader.h"
 
-// SETING PATHS
+// #setAllPaths
 void Reader::setAllPaths(const std::string &rcgPath, const std::string &rootDir)
 {
-	// validates arguments
-	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
-		throw std::runtime_error("Not a .rcg file.");
-
+	// validates arguments.
+	// must exist and must be an rcg extension file.
 	if (!std::filesystem::exists(rcgPath))
 		throw std::runtime_error("File doesnt exist.");
+
+	if (!(rcgPath.rfind(".rcg") == rcgPath.size() - 4))
+		throw std::runtime_error("Not a .rcg file.");
 
 	// set system paths
 	this->rcgPath = rcgPath;
@@ -22,7 +23,7 @@ void Reader::setAllPaths(const std::string &rcgPath, const std::string &rootDir)
 	this->csvPath.replace(csvPath.size() - 4, 4, ".csv");
 }
 
-// LOADING DATA
+// #loadRcg
 void Reader::loadRcg()
 {
 	// scope declarations including patters to fin in data file
@@ -93,45 +94,61 @@ void Reader::loadRcg()
 	// also playerName is assigned with player and team values.
 	for (int cycle = 0; cycle < MAX_NUMBER_OF_CYCLES; cycle++)
 	{
+		// assigning cycle column
 		columns[0] = cycleLines[cycle].substr(0, cycleLines[cycle].find(" "));
+		// assigning playmode column
 		columns[5] = playmodeLines[cycle];
 
+		// for each pattern (ball or player)
 		for (int j = 0; j < 23; j++)
 		{
+			// if patter not in this line ignore the iteration
 			if (cycleLines[cycle].find(patterns[j]) == std::string::npos)
 				continue;
 
+			// get line of data from that player (line goes from the pattern foward for 64 char)
 			position = cycleLines[cycle].find(patterns[j]) + patterns[j].size() + 1;
 			playerLine = cycleLines[cycle].substr(position, 64);
 
+			// if player is not the ball
 			if (j != 0)
 			{
+				// ignore first word
 				position = playerLine.find(" ") + 1;
 				playerLine = playerLine.substr(position, 64);
 
+				// ignore second word
 				position = playerLine.find(" ") + 1;
 				playerLine = playerLine.substr(position, 64);
 			}
 
+			//get four next words into columns, they are position and speed
 			for (int c = 1; c < 5; c++)
 			{
+				//get end of new first word
 				position = playerLine.find(" ");
 
+				//assign word to column and remove word from line
 				columns[c] = playerLine.substr(0, position);
 				playerLine = playerLine.substr(position + 1, 64);
 			}
 
+			// if player is the ball
 			if (j == 0)
 			{
+				//player name is ball and has no team
+				//and we need to remove last character from the speed_y, thats trash data (sure?)
 				playerName = "ball";
 				columns[4] = columns[4].substr(0, columns[4].size() - 1);
 			}
 			else if (j > 11)
 			{
+				//player name is composed from team name and number adjusts player number offset bewtwen teams
 				playerName = rightTeam + " " + std::to_string(j - 11);
 			}
 			else
 			{
+				//plaer name is composed from team name and number
 				playerName = leftTeam + " " + std::to_string(j);
 			}
 
@@ -143,7 +160,7 @@ void Reader::loadRcg()
 	}
 }
 
-// SAVING DATA
+// #saveCsv
 void Reader::saveCsv()
 {
 
@@ -166,13 +183,13 @@ void Reader::saveCsv()
 	return;
 }
 
-// USAGE
+// #readDir
 void Reader::readDir(const std::string &rootDir)
 {
 	// get all rcg files in directory
 	std::vector<std::string> rcgPaths = listFiles(rootDir, ".rcg");
 
-	// for each rcg file sets relevant paths, loads and save.
+	// for each rcg file sets relevant paths, loads input and save output.
 	for (unsigned int i = 0; i < rcgPaths.size(); ++i)
 	{
 		std::cout << i << ". reading file: " << rcgPaths[i] << std::endl;
