@@ -911,7 +911,7 @@ void Filter::writeBody()
     }
     else if (paths[i][1] == -1 and outputFormat.groupBy == 't')
     {
-      continue
+      continue;
     }
     else
     {
