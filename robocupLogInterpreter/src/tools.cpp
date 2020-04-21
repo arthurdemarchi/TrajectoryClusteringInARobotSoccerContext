@@ -100,3 +100,77 @@ int multipleAlternativeQuestion(const std::string &question, std::vector<std::st
 
 	} while (true);
 }
+
+// #traclusDirCompatibility
+void traclusDirCompatibility(const std::string &rootDir)
+{
+	// get all csv files in directory
+	std::vector<std::string> imcompatiblePaths = listFiles(rootDir, ".csv");
+
+	// for each csv file sets relevant paths call compability tool.
+	for (unsigned int i = 0; i < imcompatiblePaths.size(); ++i)
+	{
+		std::cout << i << ". reading file: " << imcompatiblePaths[i] << std::endl;
+		try
+		{
+			std::cout << "\t" << i << ".1. Convertign to traclus compability mode." << std::endl;
+			traclusFileCompatibility(imcompatiblePaths[i]);
+		}
+		catch (const std::exception &e)
+		{
+			std::cerr << "ERROR: " << e.what() << std::endl;
+			return;
+		}
+	}
+}
+
+// #traclusFileCompatibility
+void traclusFileCompatibility(const std::string &inputPath)
+{
+	int length = 0;
+	char c = '\0';
+	std::string lastLine;
+	std::ofstream outputFile(inputPath + ".temp");
+	std::ifstream inputFile(inputPath, std::ios_base::ate);
+
+	// Get input file size
+	length = inputFile.tellg();
+
+	// loop backward over the  input file
+	for (int i = length - 2; i > 0; i--)
+	{
+		inputFile.seekg(i);
+		c = inputFile.get();
+		// coming backwards until the find of a new line
+		if (c == '\r' || c == '\n')
+			break;
+	}
+
+	// read last line from input file
+	std::getline(inputFile, lastLine);
+
+	// first word should be the rowID
+	lastLine = lastLine.substr(0, lastLine.find(" "));
+
+	// repositions input file pointer to the begining
+	myFile.seekg(0, ios::beg);
+
+	// writes traclus compatibility lines in output file
+	outputFile << 2 << std::endl;
+	outputFile << std::stoi(lastLine) + 1 << std::endl;
+
+	// copy content from input file to output file
+	outputFile << inputFile.rdbuf();
+
+	// closes both files
+	inputFile.close();
+	outputFile.close();
+
+	// remove input file
+	std::remove(inputPath);
+
+	// rename output file to prior inputfile name
+	std::rename(inputPath + ".temp", inputPath);
+
+	return;
+}

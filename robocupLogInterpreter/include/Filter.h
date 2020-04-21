@@ -210,6 +210,12 @@ public:
 	//	class is instanciated.
 	Filter(fileFormat format) : outputFormat(format){};
 
+	// getter for outputRootDir, wich ironically its not an attribute
+	// from this Class, but can be easily infered from input rootDir
+	// Return:
+	//	std::string: root dir in wich all output tree is.
+	std::string getOutputRootDir() { return rootDir.substr(0, rootDir.rfind("/", rootDir.size() - 2)) + "/output/filtered"; }
+
 	// Filters all files in a root directory reccursevely and saves the filteres
 	// data in output files.
 	// Avoid reutilizing in the same directory without clearing output, it append instead

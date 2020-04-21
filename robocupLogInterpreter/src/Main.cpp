@@ -8,14 +8,19 @@
 
 int main(int argc, char *argv[])
 {
-	// main
+
+	// user chooses output format
 	fileFormat format = fileFormatUserInstancer();
 
-	//read rcg
+	// read rcg
 	Reader reader;
 	reader.readDir();
 
-	//filter data
+	// filter data
 	Filter filter(format);
 	filter.filterDir();
+
+	// transform output intro traclus compatible
+	if (format.traclus)
+		traclusDirCompatibility(filter.getOutputRootDir());
 }

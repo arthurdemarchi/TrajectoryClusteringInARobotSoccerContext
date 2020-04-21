@@ -35,15 +35,16 @@
 // struct with attributes about how to format software output.
 struct fileFormat
 {
-    int groupBy;           //Determines how output file tree will be structured.
-    int filterBy;          //Determines wich data will be save into files.
-    bool header;           //Determines if tables will have header.
-    bool rowId;            //Determines if tables will have ids on rows.
+    int groupBy;           // Determines how output file tree will be structured.
+    int filterBy;          // Determines wich data will be save into files.
+    bool header;           // Determines if tables will have header.
+    bool rowId;            // Determines if tables will have ids on rows.
     bool playLength;       // Determines if tables will have a play length column
-    bool team;             //Determines if tables will have a team column.
-    bool cycle;            //Determines if tables will have a cycle column.
+    bool team;             // Determines if tables will have a team column.
+    bool cycle;            // Determines if tables will have a cycle column.
     bool player;           // Determines if tables will habe a player column.
-    std::string separator; //The string separator that will be used for tables
+    bool traclus;          // Determines if should use traclus compatible format
+    std::string separator; // The string separator that will be used for tables
     bool halfField;        // Determines if data will suffer transformations to be placed
                            // as if plays were happening from the same side of field.
 };

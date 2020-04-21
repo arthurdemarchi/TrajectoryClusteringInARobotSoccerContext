@@ -18,33 +18,11 @@
 #ifndef INCLUDE_DEBUG_H_
 #define INCLUDE_DEBUG_H_
 
-// Includes.
-#include "Filter.h"
-#include "fileFormat.h"
-
 // Printing macro that is compiled as blank in release mode.
 #ifdef DEBUG
 #define debug(a) std::cout << a << std::endl
 #else
 #define debug(a)
 #endif
-
-// Print plays attribute of filter into terminal.
-//  Args:
-//      Filter filter: Filter from wich attribute should be printed.
-//  Output:
-//      Prints in Console
-//  Example:
-//      printPlays(filter);
-void printPlays(Filter filter);
-
-// Print a file format struct into terminal.
-//  Args:
-//      fileFormat format: fileFormat instance that should be printed.
-//  Output:
-//      Prints in Console
-//  Example:
-//      printFileFormat(format);
-void printFileFormat(fileFormat format);
 
 #endif // INCLUDE_DEBUG_H_

@@ -60,4 +60,23 @@ bool booleanQuestion(const std::string &question);
 //  bool users_choise = booleanQuestion("Do you want ice cream?");/
 int multipleAlternativeQuestion(const std::string &question, std::vector<std::string> alternatives);
 
+// function to convert the filter output into a traclus compativle output
+// opens a file write the 2 compability lines and copies the old file into
+// it, then deletes olde and renames new file to olds file name
+// Args:
+//  const std::String &inputPath: File to convert
+// Output:
+//  File on disk now has 2 new header lines
+void traclusFileCompatibility(const std::string &inputPath);
+
+// function to convert a whole directory to a traclus compatible one
+// uses traclusFileCompaility function, refer to that;
+// Args:
+//  cost std::string &rootDir: Directory to be converted
+// Outpus:
+//  All files in directory get 2 compability lines
+// Example:
+//  traclusDirCompatibility("PATH/WHERE/ARE/FILES/TO/CONVERT");
+void traclusDirCompatibility(const std::string &rootDir);
+
 #endif // INCLUDE_TOOLS_H_

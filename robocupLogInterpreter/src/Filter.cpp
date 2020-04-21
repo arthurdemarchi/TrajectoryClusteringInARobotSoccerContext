@@ -85,7 +85,7 @@ void Filter::setPerTeamPath()
 
   // get first team name and set file name
   position = inputLine.find(" ");
-  this->outputPath = this->outputDir + inputLine.substr(0, position);
+  this->outputPath = this->outputDir + inputLine.substr(0, position) + ".csv";
 
   // discart same team lines
   for (int i = 0; i < 11; i++)
@@ -102,7 +102,7 @@ void Filter::setPerTeamPath()
 
   // get second team name and set file name
   position = inputLine.find(" ");
-  this->outputSecondPath = this->outputDir + inputLine.substr(0, position);
+  this->outputSecondPath = this->outputDir + inputLine.substr(0, position) + ".csv";
   return;
 }
 
