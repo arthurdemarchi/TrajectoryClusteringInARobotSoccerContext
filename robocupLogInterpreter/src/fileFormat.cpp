@@ -17,6 +17,8 @@ fileFormat UserInterface()
         getchar();
         if (option.groupBy == 'g' or option.groupBy == 't' or option.groupBy == 's')
         {
+            if (option.groupBy == 't')
+                std::cout << "    WARNING: Since ball has no team organizing per Team ignores ball data!" << std::endl;
             //std::cout << "you chosed: " << groupBy << std::endl;
             break;
         }
@@ -38,7 +40,7 @@ fileFormat UserInterface()
         scanf(" %c", &option.filterBy);
         getchar();
         if (option.filterBy == 'f' or option.filterBy == 'o')
-        {
+        {       
             //std::cout << "you chosed: " << option.filterBy << std::endl;
             break;
         }

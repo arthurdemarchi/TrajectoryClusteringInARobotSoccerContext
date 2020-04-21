@@ -783,11 +783,10 @@ void Filter::writeHeaderIfEmpty()
   }
 }
 
-bool Filter::isPathIdFromOffense(unsigned int i)
+bool Filter::getPathOffensiveTeam(unsigned int i)
 {
   //get play index and use it to determine who was offensive during this path execution
   unsigned int playsIndex = 0;
-  int attacker;
   while (playsIndex < plays.size())
   {
     //found from wich play this path is
@@ -796,18 +795,12 @@ bool Filter::isPathIdFromOffense(unsigned int i)
     playsIndex++;
   }
   //plays third(2) collum determines whos the offensive
-  attacker = plays[playsIndex][2];
-
-  //if the path is from the offensive returns true
-  if (paths[i][1] == attacker)
-    return true;
-
-  return false;
+  return plays[playsIndex][2];
 }
 
 void Filter::writeBody()
 {
-  int rowIdFirstFile = 0, rowIdSecondFile = 0;
+  int rowIdFirstFile = 0, rowIdSecondFile = 0, fieldSide = 0, attacker = -1;
   std::string unusedString;
   if (outputFormat.header)
   {
@@ -834,9 +827,29 @@ void Filter::writeBody()
   // write data
   for (unsigned int i = 0; i < paths.size(); i++)
   {
+
+    attacker = getPathOffensiveTeam(i);
+
     //skips defense if needed
-    if (outputFormat.filterBy == 'o' and !isPathIdFromOffense(i))
+    if (outputFormat.filterBy == 'o' and (paths[i][1] != attacker))
       continue;
+
+    //if only half a field wanna be analised
+    //that is both teams attacking on same size
+    //not actually only one half of field data
+    //then chooses when to apply the simmetry
+    //multiplier
+    if (outputFormat.halfField)
+    {
+      if (attacker == 1)
+      {
+        fieldSide = -1;
+      }
+      else
+      {
+        fieldSide = 1;
+      }
+    }
 
     if (paths[i][1] == 0 or outputFormat.groupBy != 't')
     {
@@ -861,7 +874,7 @@ void Filter::writeBody()
 
       for (unsigned int j = 3; j < paths[i].size(); j++)
       {
-        outputFile << paths[i][j];
+        outputFile << fieldSide * paths[i][j];
         if (j != paths[i].size() - 1)
           outputFile << outputFormat.separator;
       }
@@ -890,11 +903,15 @@ void Filter::writeBody()
 
       for (unsigned int j = 3; j < paths[i].size(); j++)
       {
-        secondOutputFile << paths[i][j];
+        secondOutputFile << fieldSide * paths[i][j];
         if (j != paths[i].size() - 1)
           secondOutputFile << outputFormat.separator;
       }
       secondOutputFile << std::endl;
+    }
+    else if (paths[i][1] == -1 and outputFormat.groupBy == 't')
+    {
+      continue
     }
     else
     {

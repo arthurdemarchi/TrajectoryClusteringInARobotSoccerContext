@@ -11,6 +11,7 @@ struct fileFormat
     bool team;
     bool cycle;
     bool player;
+    bool halfField;
     std::string separator;
 
     void print();

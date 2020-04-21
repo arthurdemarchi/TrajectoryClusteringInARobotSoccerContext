@@ -128,7 +128,7 @@ private:
 	//void saveTeams();
 	void saveFile();
 	void writeHeaderIfEmpty();
-	bool isPathIdFromOffense(unsigned int i);
+	bool getPathOffensiveTeam(unsigned int i);
 	void writeBody();
 
 public:
