@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 // function to list all files of one specified extension into
 // a root directory

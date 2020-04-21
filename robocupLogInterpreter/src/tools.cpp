@@ -130,8 +130,9 @@ void traclusFileCompatibility(const std::string &inputPath)
 	int length = 0;
 	char c = '\0';
 	std::string lastLine;
-	std::ofstream outputFile(inputPath + ".temp");
-	std::ifstream inputFile(inputPath, std::ios_base::ate);
+	std::string outputPath = inputPath + ".temp";
+	std::ofstream outputFile(outputPath.c_str());
+	std::ifstream inputFile(inputPath.c_str(), std::ios_base::ate);
 
 	// Get input file size
 	length = inputFile.tellg();
@@ -153,7 +154,7 @@ void traclusFileCompatibility(const std::string &inputPath)
 	lastLine = lastLine.substr(0, lastLine.find(" "));
 
 	// repositions input file pointer to the begining
-	myFile.seekg(0, ios::beg);
+	inputFile.seekg(0, std::ios::beg);
 
 	// writes traclus compatibility lines in output file
 	outputFile << 2 << std::endl;
@@ -167,10 +168,10 @@ void traclusFileCompatibility(const std::string &inputPath)
 	outputFile.close();
 
 	// remove input file
-	std::remove(inputPath);
+	std::remove(inputPath.c_str());
 
 	// rename output file to prior inputfile name
-	std::rename(inputPath + ".temp", inputPath);
+	std::rename(outputPath.c_str(), inputPath.c_str());
 
 	return;
 }
