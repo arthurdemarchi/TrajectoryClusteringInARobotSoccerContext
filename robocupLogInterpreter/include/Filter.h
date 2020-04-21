@@ -1,31 +1,56 @@
-#pragma once
-#include "tools.h"
-#include "constants.h"
+// Class used to filter read/Interpreted data written by 'Reader' class
+// Copyright (C) 2020  Arthur Demarchi
+
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+#ifndef INCLUDE_FILTER_H_
+#define INCLUDE_FILTER_H_
+
+// Includes.
 #include <vector>
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <math.h>
+#include "tools.h"
+#include "constants.h"
 #include "fileFormat.h"
 
-// FILTER CLASS
-// used to filter csv interpreted
-// results, this will output two files
-// a new filtered csv and a raw data
-// file used as input for clustering alg..
+// Class used to filter read/Interpreted data written by 'Reader' class.
+// Data is read from disk, 'Reader' is not needed to be instanciated or
+// referenced as longs as its output is on Disk on the path used by this class.
+// It has a root Dir from wich it will be read all files, and can output data
+// in two different files for each file it read.
+// Example:
+//   fileFormat format = fileFormatUserInstancer();
+//   Filter filter(format);
+//   filter.filterDir("MyPC/Path/To/Data/Root/Dir/To/Filter")
 class Filter
 {
-
-	// #### ATTRIBUTES ####
 private:
-	// struct with data that represents the format
-	// in wich the output will be displayed on save
-	fileFormat outputFormat;
+	// Output format Attribute.
+	fileFormat outputFormat; //Sets output data file tree and content
 
-	// System Paths
-	// System Paths will be used constantly, so to avoid
-	// overhead they will be infered a single time
-	// and stored in the class
+	// System Paths related Attributes.
+	// 1. Input data root dir.
+	// 2. Current Input data dir.
+	// 3. Current Input data path.
+	// 4. Current input data file name.
+	// 5. Current Output Dir.
+	// 6. Current Output file name.
+	// 7. CUrrent Second output file name.
 	std::string rootDir;
 	std::string inputDir;
 	std::string inputPath;
@@ -34,108 +59,176 @@ private:
 	std::string outputPath;
 	std::string outputSecondPath;
 
-	//	std::string filteredDir;
-	//	std::string filteredPath;
-	//	std::string rawDir;
-	//	std::string rawPath;
-	//	std::string teamsDir;
-	//	std::string leftTeamPath;
-	//	std::string rightTeamPath;
-
-	// Data
-	// this class has 4 data structures:
-	// 1. "data" wich is the raw data loaded from csv file
-	// plays wich is the a filtered version of the raw
-	// 2. "plays" wich is a definition with the cycle bounds
-	// of the plays in interest
-	// 3. "filtered" with only the plays in interest after
-	// 4. "paths" wich is the data in plays allocated in
-	// a sequence line the forms the path the players took.
+	// Data Tables Attributes.
+	// 1. data: The raw data loaded from a csv file plus infered info.
+	// 2. plays: set of plays inits, ends and their offesinve teams.
+	// 3. filtered: Data filtered using said infered info and plays boundaries.
+	// 4. paths: Sets of Path took by each player during each play.
 	std::vector<std::vector<float>> data;
 	std::vector<std::vector<int>> plays;
 	std::vector<std::vector<float>> filtered;
 	std::vector<std::vector<float>> paths;
 
-	//Data containers
-	// the 3 data sctructures defined above are cosntructured
-	// via 3 containers of data that are:
-	// 1. "dataLine" wich represents one line of data for "data".
-	// 2. "play" wich represents the cycle bounds of a single play.
-	// 3. "path" wich represents a single path taken by a player.
-	// 4. Since "data" has the same structure as "filtered", being different
-	// only in terms of wich lines show, "dataline" is also used for
-	// "filtered".
-	// obs.: dataLine is defined as sting for reading from files, but
-	// data and filtered are float vectores, that occurs because
-	// inside of the class casts are being made to float.
+	// Data Lines Attributes.
+	// 1. dataLine: Each line read from csv files input plus infered info.
+	// 2. play: a play boundaries and offesinve team.
+	// 3. path: information about a path took by a player during a play.
+	// 4. inputLine: actual raw line read from csv files.
 	std::vector<float> dataLine;
 	std::vector<int> play;
 	std::vector<float> path;
 	std::string inputLine;
-
-	// #### METHODS ####
-
-	// SYSTEM PATHS
-	// setAllPaths sets root Dir and Calls all the other setters in order.
-	//void setAllPaths(const std::string &inputPath, const std::string &rootDir, bool singleFile = false);
-	//void setPathsByFormat(fileFormat &format, const std::string &inputPath, const std::string &rootDir);
-	//void setInputPath(const std::string &inputPath);
-	//void setFilteredPath();
-	//void setTeamsPath();
-	//void setRawPath(bool singleFile);
+	// Based on output format attribute, a root input directory and a input file path
+	// set all system paths for output and input in the class inner attributes
+	// output format attribute should be already setted prior use of this function.
+	//  Args:
+	//		const std::string &inputPath: path for the current file input.
+	//		const std::string &rootDir: Path for the root dir of input files.
+	//  Output:
+	//      All inner attributes related to system paths should be setted.
 	void setPaths(const std::string &inputPath, const std::string &rootDir);
+
+	// sub module of setPaths to set the data input paths attributes.
+	// Args:
+	//	const std::string &inputPath: path for the current file input.
+	// Output:
+	//	Input path inner attribute should be setted.
 	void setInputPath(const std::string &inputPat);
+
+	// sub module of setPaths to set the data output path for a single file.
+	// Output:
+	//	output data path inner attributes should be setted.
 	void setSinglePath();
+
+	// sub module of setPaths to set the data output path for game file structure tree.
+	// Output:
+	//	output data path inner attributes should be setted.
 	void setPerGamePath();
+
+	// sub module of setPaths to set the data output path for team file structure tree.
+	// Output:
+	//	output data path inner attributes should be setted.
 	void setPerTeamPath();
-	// DATA
 
-	// The 4 data structures are created via following methods
+	// Using Inner Path attributes reads data from disk and saves t
+	// into the 'data' attribute.
+	// Output:
+	//	Attribute data will be filled with read data.
+	//	Columns that reference ball possession will be fillled with zero.
+	void loadData();
 
-	// 1. data
-	// loadData takes data from files to "data";
-	// using playmodeToFloat to convert playmodes
-	// into a float indexing list (integer values)
-	void
-	loadData();
+	// sub module of loadData to transform the strings interpreted as 'playmode'
+	// to a integer for a simplified sotorage of information into the data attribute.
+	// Args:
+	//	const std::string &playmode: playmode string to be converted to integer.
+	// return:
+	//	int: integer obtained from playmode to integer table.
 	int playmodeToInt(const std::string &playmode);
-	void saveLoadedData();
-	// 2. plays
-	// setPlays uses a evalHold,isAnEnd and lookForBegin
-	// those are function to define ball possession and then
-	// using team on ball and playmode (dead ball) definitions
-	// can define boundaries to the begin and end of each play
-	void setPlays();
-	void evalHold();
-	bool isAnEnd(int i);
-	int lookForBegin(int i);
-	int getAttacker(int playmdoe);
-	void printPlays();
 
-	// 3. filter
-	// filter uses "plays" to create a filtered version of "data".
+	// Using a set a rules and the filled data attributes
+	// generate data about ball possession. This data will be
+	// save on the data attribute it self, in columns that
+	// were left empty by loadData.
+	// Output:
+	//	data columns that are about ball possession will be correctly refiled.
+	void evalHold();
+
+	// Using data attributes set the plays attribute
+	// each play is composed by a init cycle, a
+	// end cycle and the info about whose the offensive team
+	// Output:
+	//  Fills the inner attribute Plays.
+	void setPlays();
+
+	// sub module of setPlays used to discover if data line is the end of play.
+	// returns true only for one line of each cycle (cycles have 23 data lines).
+	// Args:
+	//	int i: index of a data line.
+	// return:
+	//	bool: true when the data line in question is the end of a play.
+	bool isAnEnd(int i);
+
+	// sub module of setPlays used to discover the begin of play based ont
+	// its end and data attribute.
+	// Args:
+	//	int i: index of a dataline that is a end of play.
+	// return:
+	//	int: dataline index that is the begining of the play with end in dataline index 'i.
+	int lookForBegin(int i);
+
+	// sub module of setPlays used to discover the offenssive team of
+	// a play.
+	// Args:
+	//	int playmode: a integer that refers the final playmode of that play.
+	// return:
+	//	int: 0 for left team, 1 for right team.
+	int getAttacker(int playmdoe);
+
+	// Uses data attribute and plays attribute  to fill
+	// the fltered attribute, wich is the same as data
+	// but only for the plays selected.
+	// Output:
+	//	Inner attribute filtered is setted.
 	void setFiltered();
 
-	// 4. paths
-	// createPahts generates "pahts" using "filtered".
+	// User the filtered attribute to create and fill the
+	// paths attribute.
+	// Output:
+	//	inner attribute paths is filled.
 	void createPaths();
 
-	// OUTPUT
-	// writes paths to files, raw is raw data and
-	// csv is a file with headers and more info.
-	//void saveCsv();
-	//void saveRaw();
-	//void saveTeams();
+	// Saves the paths attribute data into one or two output files.
+	// It uses paths, plays and the system paths attributes.
+	// Output:
+	//	one or two files will be written into disk.
 	void saveFile();
+
+	// sub module of saveFile that is used to write a header into a file
+	// it also checks if file is empty before doind so.
+	// Output:
+	//	Header is written into a file.
 	void writeHeaderIfEmpty();
+
+	// sub module of saveFile that gets from plays wich is the
+	// offessinve team in the path that is being written.
+	// Args:
+	//	unsigned int i: index of path that is being written
+	// return;
+	//	bool: false for left team, true for right team.
 	bool getPathOffensiveTeam(unsigned int i);
+
+	// sub module of saveFile that saves the actual data of the
+	// paths into the file.
+	// Output:
+	//	Major part of paths data is written into the file.
 	void writeBody();
 
 public:
-	Filter(fileFormat format) : outputFormat(format)
-	{
-	}
-	//filterDir is a callable method that uses the above
-	//methods in a recursive way for all files in a root dir.
+	// Default constructor cant be used.
+	// all attributes and all methods, but one, are private
+	// because they need to be executed in that certain order and the
+	// single public method ensures that.
+	// Since everything is private a default constructor has no point
+	Filter() = delete;
+
+	// Constructor has a initializer list to set output format
+	// Args:
+	//	fileFormat format: the struct fileFormat used to determines the output format.
+	// output:
+	//	class is instanciated.
+	Filter(fileFormat format) : outputFormat(format){};
+
+	// Filters all files in a root directory reccursevely and saves the filteres
+	// data in output files.
+	// Avoid reutilizing in the same directory without clearing output, it append instead
+	// of overwritten.
+	// Args:
+	//	const std::string &rootDir: the path to the root directory in wich are the files.
+	// Output:
+	//	All attributes are filled and a bunch of files are written into disk.
+	// Example:
+	//	filter.filterDir("Path/TO/DATA/FILES")
 	void filterDir(const std::string &rootDir = "../data/output/unfiltered");
 };
+
+#endif // INCLUDE_FILTER_H_

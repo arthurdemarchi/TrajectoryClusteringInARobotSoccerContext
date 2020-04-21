@@ -942,13 +942,13 @@ void Filter::filterDir(const std::string &rootDir)
       loadData();
       std::cout << "\t" << i << ".3. evaluating ball possession." << std::endl;
       evalHold();
-      std::cout << "\t" << i << ".4. loading plays." << std::endl;
+      std::cout << "\t" << i << ".4. defining plays." << std::endl;
       setPlays();
       std::cout << "\t" << i << ".5. filtering data." << std::endl;
       setFiltered();
       std::cout << "\t" << i << ".6. creating paths." << std::endl;
       createPaths();
-      std::cout << "\t" << i << ".7. writing saving File." << std::endl;
+      std::cout << "\t" << i << ".7. writing in output File." << std::endl;
       saveFile();
     }
     catch (const std::exception &e)

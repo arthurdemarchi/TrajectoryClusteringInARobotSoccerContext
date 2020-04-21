@@ -15,8 +15,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef INCLUDE_CONSTANTS_H
-#define INCLUDE_CONSTANTS_H
+#ifndef INCLUDE_CONSTANTS_H_
+#define INCLUDE_CONSTANTS_H_
 
 //defining maximum game length
 //6000 cycles for normal games
@@ -49,4 +49,4 @@
 //acceptable.
 #define CHANGE_PLAYMODE_DELAY 5
 
-#endif // INCLUDE_CONSTANTS_H
+#endif // INCLUDE_CONSTANTS_H_

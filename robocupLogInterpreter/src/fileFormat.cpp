@@ -1,6 +1,6 @@
 #include "fileFormat.h"
 
-fileFormat UserInterface()
+fileFormat fileFormatUserInstancer()
 {
     fileFormat option;
 

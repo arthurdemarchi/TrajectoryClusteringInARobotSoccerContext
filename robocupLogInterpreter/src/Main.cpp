@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	// main
-	fileFormat format = UserInterface();
+	fileFormat format = fileFormatUserInstancer();
 
 	//read rcg
 	Reader reader;

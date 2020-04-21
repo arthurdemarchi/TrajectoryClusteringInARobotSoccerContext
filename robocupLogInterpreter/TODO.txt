@@ -1,0 +1,9 @@
+Filter.h
+1. Reavaluate if Datalines are needed as class attributes
+
+Fileformat.cpp
+2. Reedo whole interface
+
+Debug.h
+3. TODOS Theres
+
