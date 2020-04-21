@@ -70,15 +70,6 @@ private:
 	std::vector<std::vector<float>> filtered;
 	std::vector<std::vector<float>> paths;
 
-	// Data Lines Attributes.
-	// 1. dataLine: Each line read from csv files input plus infered info.
-	// 2. play: a play boundaries and offesinve team.
-	// 3. path: information about a path took by a player during a play.
-	// 4. inputLine: actual raw line read from csv files.
-	std::vector<float> dataLine;
-	std::vector<int> play;
-	std::vector<float> path;
-	std::string inputLine;
 	// Based on output format attribute, a root input directory and a input file path
 	// set all system paths for output and input in the class inner attributes
 	// output format attribute should be already setted prior use of this function.
