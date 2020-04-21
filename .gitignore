@@ -262,3 +262,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/c,c++,code,linux,python,visualstudiocode
+
+#NOT AUTO GENERATED LINES
+data/*
+bin/*
+build/*
