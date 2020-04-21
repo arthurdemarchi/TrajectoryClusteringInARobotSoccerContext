@@ -49,4 +49,8 @@
 //acceptable.
 #define CHANGE_PLAYMODE_DELAY 5
 
+//defining boolean for each team
+#define LEFT_TEAM 0
+#define RIGHT_TEAM 1
+
 #endif // INCLUDE_CONSTANTS_H_

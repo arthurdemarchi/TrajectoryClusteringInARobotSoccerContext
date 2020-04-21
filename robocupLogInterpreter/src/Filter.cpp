@@ -17,13 +17,13 @@ void Filter::setPaths(const std::string &inputPath, const std::string &rootDir)
   setInputPath(inputPath);
 
   //output
-  if (outputFormat.groupBy == 's')
+  if (outputFormat.groupBy == FF_GROUPBY_SINGLE)
     setSinglePath();
 
-  else if (outputFormat.groupBy == 'g')
+  else if (outputFormat.groupBy == FF_GROUPBY_GAME)
     setPerGamePath();
 
-  else if (outputFormat.groupBy == 't')
+  else if (outputFormat.groupBy == FF_GROUPBY_TEAMS)
     setPerTeamPath();
 
   return;
@@ -749,7 +749,7 @@ void Filter::writeHeaderIfEmpty()
     file.close();
   }
 
-  if (outputFormat.groupBy == 't')
+  if (outputFormat.groupBy == FF_GROUPBY_TEAMS)
   {
     std::fstream secondFile;
     secondFile.open(outputSecondPath, std::ios::app);
@@ -815,7 +815,7 @@ void Filter::writeBody()
   outputFile.close();
   outputFile.open(outputPath, std::ios::app);
 
-  if (outputFormat.groupBy == 't')
+  if (outputFormat.groupBy == FF_GROUPBY_TEAMS)
   {
     secondOutputFile.open(outputSecondPath);
     while (std::getline(secondOutputFile, unusedString))
@@ -831,7 +831,7 @@ void Filter::writeBody()
     attacker = getPathOffensiveTeam(i);
 
     //skips defense if needed
-    if (outputFormat.filterBy == 'o' and (paths[i][1] != attacker))
+    if (outputFormat.filterBy == FF_FILTERBY_FINAL_O and (paths[i][1] != attacker))
       continue;
 
     //if only half a field wanna be analised
@@ -851,7 +851,7 @@ void Filter::writeBody()
       }
     }
 
-    if (paths[i][1] == 0 or outputFormat.groupBy != 't')
+    if (paths[i][1] == 0 or outputFormat.groupBy != FF_GROUPBY_TEAMS)
     {
       //write data not skipped
       if (outputFormat.rowId)
@@ -880,7 +880,7 @@ void Filter::writeBody()
       }
       outputFile << std::endl;
     }
-    else if (paths[i][1] == 1 and outputFormat.groupBy == 't')
+    else if (paths[i][1] == 1 and outputFormat.groupBy == FF_GROUPBY_TEAMS)
     {
       //write data not skipped
       if (outputFormat.rowId)
@@ -909,7 +909,7 @@ void Filter::writeBody()
       }
       secondOutputFile << std::endl;
     }
-    else if (paths[i][1] == -1 and outputFormat.groupBy == 't')
+    else if (paths[i][1] == -1 and outputFormat.groupBy == FF_GROUPBY_TEAMS)
     {
       continue;
     }
@@ -919,7 +919,7 @@ void Filter::writeBody()
     }
   }
   outputFile.close();
-  if (outputFormat.groupBy == 't')
+  if (outputFormat.groupBy == FF_GROUPBY_TEAMS)
     secondOutputFile.close();
   return;
 }

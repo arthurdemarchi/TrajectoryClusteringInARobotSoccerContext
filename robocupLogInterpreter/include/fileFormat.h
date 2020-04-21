@@ -20,12 +20,23 @@
 
 // Includes.
 #include <iostream>
+#include <vector>
+#include "tools.h"
+
+// Defines for the multi optional attributes
+#define FF_GROUPBY_GAME 0
+#define FF_GROUPBY_TEAMS 1
+#define FF_GROUPBY_SINGLE 2
+#define FF_FILTERBY_FINAL 0
+#define FF_FILTERBY_FINAL_O 1
+#define FF_SEPARATOR_COMMA 0
+#define FF_SEPARATOR_BLANK 1
 
 // struct with attributes about how to format software output.
 struct fileFormat
 {
-    char groupBy;          //Determines how output file tree will be structured.
-    char filterBy;         //Determines wich data will be save into files.
+    int groupBy;           //Determines how output file tree will be structured.
+    int filterBy;          //Determines wich data will be save into files.
     bool header;           //Determines if tables will have header.
     bool rowId;            //Determines if tables will have ids on rows.
     bool playLength;       // Determines if tables will have a play length column

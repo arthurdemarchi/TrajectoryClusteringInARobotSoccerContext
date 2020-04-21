@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include "FilterIndexing.h"
 #include "tools.h"
 #include "constants.h"
 #include "fileFormat.h"
