@@ -4,7 +4,6 @@
 
 #include "Reader.h"
 #include "Filter.h"
-#include "tools.h"
 #include "fileFormat.h"
 
 int main(int argc, char *argv[])
