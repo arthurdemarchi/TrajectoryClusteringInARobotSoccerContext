@@ -137,7 +137,7 @@ void Filter::loadData()
     position = inputLine.find(" ");
     if (inputLine.substr(0, position) == "ball,")
     {
-      team = -1;
+      team = BALL_TEAM;
     }
     else if (!(teamName == inputLine.substr(0, position)))
     {
@@ -151,7 +151,7 @@ void Filter::loadData()
 
     // get player from line
     // ball is considered player 0
-    if (team == -1)
+    if (team == BALL_TEAM)
     {
       player = 0;
     }
@@ -514,7 +514,7 @@ bool Filter::isAnEnd(int i)
 int Filter::lookForBegin(int i)
 {
   // scope declaration for wich teams begins with the ball
-  int teamOnBall = -1;
+  int teamOnBall = -2;
 
   // if its to early in the game play was there from beggining
   if (i < 23 * 3)
@@ -821,7 +821,8 @@ bool Filter::getPathOffensiveTeam(unsigned int i)
 void Filter::writeBody()
 {
   // scope variables
-  int rowIdFirstFile = 0, rowIdSecondFile = 0, fieldSide = 0, attacker = -1;
+  // field side has to be initialized as 1, as it will only change if asked to
+  int rowIdFirstFile = 0, rowIdSecondFile = 0, fieldSide = 1, attacker = -1;
   std::string unusedString;
 
   // if theres header decrement row counter to -1
@@ -858,7 +859,7 @@ void Filter::writeBody()
     attacker = getPathOffensiveTeam(i);
 
     // skips defense if filter tells to
-    if (outputFormat.filterBy == FF_FILTERBY_FINAL_O and (paths[i][1] != attacker))
+    if (outputFormat.filterBy == FF_FILTERBY_FINAL_O and (paths[i][1] != attacker) and (paths[i][1] != BALL_TEAM))
       continue;
 
     // if only half a field wanna be analised
@@ -939,13 +940,62 @@ void Filter::writeBody()
       secondOutputFile << std::endl;
     }
 
-    // if data is from ball and grouping by team, ignores it
-    else if (paths[i][1] == -1 and outputFormat.groupBy == FF_GROUPBY_TEAMS)
-      continue;
+    // if data is from ball and grouping by team, writes in both files
+    else if (paths[i][1] == BALL_TEAM and outputFormat.groupBy == FF_GROUPBY_TEAMS)
+    {
+      // same as before
+      if (outputFormat.rowId)
+      {
+        outputFile << rowIdFirstFile << outputFormat.separator;
+        rowIdFirstFile++;
+
+        secondOutputFile << rowIdSecondFile << outputFormat.separator;
+        rowIdSecondFile++;
+      }
+
+      if (outputFormat.cycle)
+      {
+        outputFile << paths[i][0] << outputFormat.separator;
+        secondOutputFile << paths[i][0] << outputFormat.separator;
+      }
+
+      if (outputFormat.team)
+      {
+        outputFile << paths[i][1] << outputFormat.separator;
+        secondOutputFile << paths[i][1] << outputFormat.separator;
+      }
+
+      if (outputFormat.player)
+      {
+        secondOutputFile << paths[i][2] << outputFormat.separator;
+        outputFile << paths[i][2] << outputFormat.separator;
+      }
+
+      if (outputFormat.playLength)
+      {
+        outputFile << (paths[i].size() - 3) / 2 << outputFormat.separator;
+        secondOutputFile << (paths[i].size() - 3) / 2 << outputFormat.separator;
+      }
+
+      for (unsigned int j = 3; j < paths[i].size(); j++)
+      {
+        outputFile << fieldSide * paths[i][j];
+        secondOutputFile << fieldSide * paths[i][j];
+        if (j != paths[i].size() - 1)
+        {
+          outputFile << outputFormat.separator;
+          secondOutputFile << outputFormat.separator;
+        }
+      }
+      outputFile << std::endl;
+      secondOutputFile << std::endl;
+    }
+
     // if not one of the above programmer did not expected this kinda of data
     else
       throw std::runtime_error("Something Went Wrong while Writing files.");
   }
+
   // closes file
   outputFile.close();
 

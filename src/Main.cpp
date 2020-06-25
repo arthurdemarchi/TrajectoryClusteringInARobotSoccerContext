@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	Filter filter(format);
 	filter.filterDir();
 
-	// transform output intro traclus compatible
+	// transform output into traclus compatible
 	if (format.traclus)
 		traclusDirCompatibility(filter.getOutputRootDir());
 }

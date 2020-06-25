@@ -13,7 +13,7 @@ fileFormat fileFormatUserInstancer()
     alternatives.push_back("single file");
     option.groupBy = multipleAlternativeQuestion("1. How do you wish to group data in files?", alternatives);
     if (option.groupBy == FF_GROUPBY_TEAMS) // if choosed warns user that filtering by team ignores ball data
-        std::cout << "    WARNING: Since ball has no team organizing per Team ignores ball data!" << std::endl;
+        std::cout << "    WARNING: Since ball has no team organizing per Team will write ball data in both files, that is duplicating ball data!" << std::endl;
 
     // asks user about wich filter to use
     alternatives.clear();
